@@ -9,6 +9,7 @@ class CNNMel(nn.Module):
             mel_bins: int = 32,
             n_fft: int = 1024
     ):
+        """ Implements the MelSpectrogram extraction before the CNN blocks """
         super(CNNMel, self).__init__()
 
         mel_spectrogram = MelSpectrogram(
