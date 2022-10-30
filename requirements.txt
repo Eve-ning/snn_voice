@@ -1,0 +1,9 @@
+scikit-learn
+seaborn
+matplotlib
+pandas
+tqdm
+torch
+torchvision
+torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+librosa
