@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import Tuple
 
 import torch
@@ -6,7 +6,7 @@ from torch.nn.functional import pad
 from torch.utils.data import DataLoader
 from torchaudio.datasets import SPEECHCOMMANDS
 
-from src.settings import SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES
+from src.settings import SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES, DATA_DIR
 
 
 def collate_fn(batch):
@@ -14,7 +14,10 @@ def collate_fn(batch):
     ars_label = []
 
     for b in batch:
-        ar_audio = pad(b[0], [0, SPEECHCOMMAND_SR - b[0].shape[-1]], 'constant')
+        if b[0].shape[-1] != SPEECHCOMMAND_SR:
+            ar_audio = pad(b[0], [0, SPEECHCOMMAND_SR - b[0].shape[-1]], 'constant')
+        else:
+            ar_audio = b[0]
         ars_audio.append(ar_audio)
         ars_label.append(SPEECHCOMMAND_CLASSES.index(b[2]))
 
@@ -23,32 +26,37 @@ def collate_fn(batch):
 
 @dataclass
 class SpeechCommandDataset:
-    batch_size: int = 2
+    batch_size: int = 128
     classes: Tuple[str] = SPEECHCOMMAND_CLASSES
+    data_dir = DATA_DIR / "SpeechCommands"
+    download: bool = False
+    num_workers: int = 0
+    dl_kwargs: dict = field(default_factory=dict)
 
-    def train_dl(self, download: bool = False, num_workers: int = 1):
-        train_ds = SPEECHCOMMANDS("data/", download=download, subset="training")
+    def train_dl(self):
+        train_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="training")
         return DataLoader(train_ds,
                           batch_size=self.batch_size,
                           collate_fn=collate_fn,
-                          num_workers=num_workers,
-                          shuffle=True)
+                          num_workers=self.num_workers,
+                          shuffle=True,
+                          **self.dl_kwargs)
 
-    def val_dl(self, download: bool = False, num_workers: int = 1):
-        val_ds = SPEECHCOMMANDS("data/", download=download, subset="validation")
+    def val_dl(self):
+        val_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="validation")
         return DataLoader(val_ds,
                           batch_size=self.batch_size,
-                          num_workers=num_workers,
-                          collate_fn=collate_fn)
+                          num_workers=self.num_workers,
+                          collate_fn=collate_fn,
+                          **self.dl_kwargs)
 
-    def test_dl(self, download: bool = False, num_workers: int = 1):
-        test_ds = SPEECHCOMMANDS("data/", download=download, subset="testing")
+    def test_dl(self):
+        test_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="testing")
         return DataLoader(test_ds,
                           batch_size=self.batch_size,
-                          num_workers=num_workers,
-                          collate_fn=collate_fn)
+                          num_workers=self.num_workers,
+                          collate_fn=collate_fn,
+                          **self.dl_kwargs)
 
-    def dls(self, download: bool = False, num_workers: int = 1):
-        return self.train_dl(download, num_workers), \
-               self.val_dl(download, num_workers), \
-               self.test_dl(download, num_workers)
+    def dls(self):
+        return self.train_dl(), self.val_dl(), self.test_dl()
