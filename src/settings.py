@@ -1,7 +1,4 @@
-SEQ_SIZE: int = 16000
-MEL_BINS: int = 32
-N_FFT: int = 1024
-WITH_MEL_SPEC: bool = True
+SPEECHCOMMAND_SR: int = 16000
 
 SPEECHCOMMAND_CLASSES = (
     'backward', 'bed', 'bird', 'cat', 'dog', 'down', 'eight', 'five', 'follow', 'forward', 'four', 'go',

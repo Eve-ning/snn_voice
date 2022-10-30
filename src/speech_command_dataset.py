@@ -5,21 +5,8 @@ import torch
 from torch.nn.functional import pad
 from torch.utils.data import DataLoader
 from torchaudio.datasets import SPEECHCOMMANDS
-from torchaudio.transforms import MelSpectrogram
 
-from src.settings import SEQ_SIZE, WITH_MEL_SPEC, SPEECHCOMMAND_CLASSES, MEL_BINS, N_FFT
-
-mel_spectrogram = MelSpectrogram(
-    sample_rate=SEQ_SIZE,
-    n_fft=N_FFT,
-    center=True,
-    pad_mode="reflect",
-    power=2.0,
-    normalized=True,
-    norm="slaney",
-    n_mels=MEL_BINS,
-    mel_scale="htk",
-)
+from src.settings import SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES
 
 
 def collate_fn(batch):
@@ -27,9 +14,7 @@ def collate_fn(batch):
     ars_label = []
 
     for b in batch:
-        ar_audio = pad(b[0], [0, SEQ_SIZE - b[0].shape[-1]], 'constant')
-        if WITH_MEL_SPEC:
-            ar_audio = mel_spectrogram(ar_audio)
+        ar_audio = pad(b[0], [0, SPEECHCOMMAND_SR - b[0].shape[-1]], 'constant')
         ars_audio.append(ar_audio)
         ars_label.append(SPEECHCOMMAND_CLASSES.index(b[2]))
 
