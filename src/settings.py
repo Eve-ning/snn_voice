@@ -1,3 +1,5 @@
+from pathlib import Path
+
 SPEECHCOMMAND_SR: int = 16000
 
 SPEECHCOMMAND_CLASSES = (
@@ -5,3 +7,7 @@ SPEECHCOMMAND_CLASSES = (
     'happy', 'house', 'learn', 'left', 'marvin', 'nine', 'no', 'off', 'on', 'one', 'right', 'seven',
     'sheila', 'six', 'stop', 'three', 'tree', 'two', 'up', 'visual', 'wow', 'yes', 'zero'
 )
+
+SRC_DIR = Path(__file__).parent
+ROOT_DIR = SRC_DIR.parent
+DATA_DIR = ROOT_DIR / "data"
