@@ -35,10 +35,7 @@ class CNNMel2(nn.Module):
             n_input=1,
             n_channel=32
     ):
-        """ Implements the MelSpectrogram extraction before the CNN blocks
-
-
-         """
+        """ Implements the MelSpectrogram extraction before the CNN blocks """
         super(CNNMel2, self).__init__()
         n_fft = int(downsample / (n_time - 1) * 2)
         mel_spectrogram = MelSpectrogram(
@@ -59,13 +56,13 @@ class CNNMel2(nn.Module):
         )
         self.freq_extraction = nn.Sequential(
             cnn_block(n_input, n_channel, 5, 1, 1, 1, 2, 1, 2, 1),
-            # cnn_block(n_channel, n_channel, 5, 1, 1, 1, 2, 1, 2, 1),
+            cnn_block(n_channel, n_channel, 5, 1, 1, 1, 2, 1, 2, 1),
             # cnn_block(n_channel, n_channel, 5, 1, 1, 1, 2, 1, 2, 1),
             nn.AdaptiveAvgPool2d((1, fs))
         )
         self.time_extraction = nn.Sequential(
-            cnn_block(n_input, n_channel, 1, 5, 1, 1, 1, 2, 1, 2),
-            # cnn_block(n_channel, n_channel, 1, 5, 1, 1, 1, 2, 1, 2),
+            cnn_block(n_input, n_channel, 1, 20, 1, 1, 1, 2, 1, 2),
+            cnn_block(n_channel, n_channel, 1, 20, 1, 1, 1, 2, 1, 2),
             # cnn_block(n_channel, n_channel, 1, 5, 1, 1, 1, 2, 1, 2),
             nn.AdaptiveAvgPool2d((fs, 1))
         )
@@ -76,7 +73,8 @@ class CNNMel2(nn.Module):
         )
 
     def forward(self, x):
-        x = self.preprocess(x)
+        x = torch.log(self.preprocess(x) + 1e-3)
+        x = (x - x.mean()) / (x.std())
         x_freq = self.freq_extraction(x)
         x_time = self.time_extraction(x).permute(0, 1, 3, 2)
         x = torch.concat([x_freq, x_time], dim=1)
@@ -84,4 +82,4 @@ class CNNMel2(nn.Module):
         x = self.classifier(x)
         return x
 # import torch
-# CNNMel2(35, n_time=60, n_freq=60)(torch.ones([3, 1, 16000])).shape
+# CNNMel2(35, n_time=100, n_freq=32)(torch.ones([3, 1, 16000])).shape
