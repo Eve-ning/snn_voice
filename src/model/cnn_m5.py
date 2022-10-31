@@ -57,12 +57,10 @@ class CNN_M5(nn.Module):
 
     def forward(self, x):
         x = self.feature_extraction(x)
+
         # We expect a shape of (BS, 64, X) X is variable
         # To solve the variable issue, we average the last dimension
         x = F.avg_pool1d(x, x.shape[-1])
 
         x = self.classifier(x)
         return x
-
-#
-# CNN_M5(35)(torch.ones([3, 1, 8000])).shape
