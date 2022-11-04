@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 from torchaudio.transforms import MelSpectrogram, Resample
 
@@ -31,7 +32,7 @@ class CNNMel(nn.Module):
             n_freq: int = 60,
             n_time: int = 41,
             n_input=1,
-            n_channel=32
+            n_channel=80
     ):
         """ Implements the MelSpectrogram extraction before the CNN blocks
 
@@ -70,8 +71,8 @@ class CNNMel(nn.Module):
         )
 
     def forward(self, x):
-        x = self.feature_extraction(x)
-        # print(x.shape)
+        x = torch.log(self.feature_extraction(x) + 1e-3)
+        x = (x - x.mean()) / (x.std())
         x = self.flatten(x)
         x = self.classifier(x)
         return x
