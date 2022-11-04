@@ -14,7 +14,7 @@ def m5_block(in_dim, out_dim, ks, stride=1):
     )
 
 
-class CNN_M5(nn.Module):
+class CnnM5(nn.Module):
     def __init__(
             self,
             n_classes: int,
@@ -40,7 +40,7 @@ class CNN_M5(nn.Module):
             n_channel: Number of channels to use for intermediate CNN blocks.
 
         """
-        super(CNN_M5, self).__init__()
+        super(CnnM5, self).__init__()
 
         self.feature_extraction = nn.Sequential(
             Resample(SPEECHCOMMAND_SR, downsample),

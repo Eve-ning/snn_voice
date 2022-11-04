@@ -24,7 +24,7 @@ def cnn_block(
     )
 
 
-class CNNMel2(nn.Module):
+class CnnMel2(nn.Module):
     def __init__(
             self,
             n_classes: int,
@@ -36,7 +36,7 @@ class CNNMel2(nn.Module):
             n_channel=32
     ):
         """ Implements the MelSpectrogram extraction before the CNN blocks """
-        super(CNNMel2, self).__init__()
+        super(CnnMel2, self).__init__()
         n_fft = int(downsample / (n_time - 1) * 2)
         mel_spectrogram = MelSpectrogram(
             sample_rate=downsample,

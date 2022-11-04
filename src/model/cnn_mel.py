@@ -24,7 +24,7 @@ def m5_2d_block(
     )
 
 
-class CNNMel(nn.Module):
+class CnnMel(nn.Module):
     def __init__(
             self,
             n_classes: int,
@@ -42,18 +42,14 @@ class CNNMel(nn.Module):
             2015 IEEE 25th international workshop on machine learning for signal processing (MLSP). IEEE, 2015.
 
          """
-        super(CNNMel, self).__init__()
+        super(CnnMel, self).__init__()
         n_fft = int(downsample / (n_time - 1) * 2)
         mel_spectrogram = MelSpectrogram(
             sample_rate=downsample,
             n_fft=n_fft,
-            center=True,
-            pad_mode="reflect",
-            power=2.0,
             normalized=True,
             norm="slaney",
             n_mels=n_freq,
-            mel_scale="htk",
         )
 
         self.feature_extraction = nn.Sequential(
@@ -76,8 +72,3 @@ class CNNMel(nn.Module):
         x = self.flatten(x)
         x = self.classifier(x)
         return x
-#
-#
-# import torch
-#
-# CNNMel(35, n_time=81)(torch.ones([3, 1, 16000])).shape

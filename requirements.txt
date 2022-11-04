@@ -3,7 +3,10 @@ seaborn
 matplotlib
 pandas
 tqdm
+--find-links https://download.pytorch.org/whl/torch_stable.html
 torch
+pytest
 torchvision
 torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 librosa
+pytorch-lightning

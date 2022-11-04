@@ -11,3 +11,4 @@ SPEECHCOMMAND_CLASSES = (
 SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent
 DATA_DIR = ROOT_DIR / "data"
+DATA_SAMPLE_DIR = ROOT_DIR / "data_sample"
