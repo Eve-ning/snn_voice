@@ -11,13 +11,7 @@ from torchaudio.transforms import MelSpectrogram
 from src.dataset.sample_dataset import SampleDataset
 
 ds = SampleDataset()
-for i in ds.train_dl():
-    print(i)
-for i in ds.val_dl():
-    print(i)
-# for i in ds.test_dl():
-#     print(i)
-#%%
+# %%
 
 backward_path = Path("data/SpeechCommands/SpeechCommands/speech_commands_v0.02/backward/")
 backward_fp_iter = backward_path.glob("*.wav")
