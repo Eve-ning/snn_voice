@@ -24,7 +24,7 @@ def m5_2d_block(
     )
 
 
-class CnnMel(nn.Module):
+class CnnPiczak(nn.Module):
     def __init__(
             self,
             n_classes: int,
@@ -49,7 +49,7 @@ class CnnMel(nn.Module):
             n_time: Number of time bins
             n_channel: Number of channels to use for intermediate CNN blocks.
         """
-        super(CnnMel, self).__init__()
+        super(CnnPiczak, self).__init__()
         n_fft = int(resample[1] / (n_time - 1) * 2)
 
         self.feature_extraction = nn.Sequential(
