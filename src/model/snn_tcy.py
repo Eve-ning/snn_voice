@@ -35,7 +35,6 @@ class SnnTCY(nn.Module):
             n_freq: int = 60,
             n_time: int = 41,
             leaky_beta=0.85,
-            n_channels: int = 10,
             *args,
             **kwargs
     ):
@@ -61,7 +60,7 @@ class SnnTCY(nn.Module):
         self.spike_gen = snn.Leaky(beta=leaky_beta, init_hidden=True)
         self.flatten = nn.Flatten()
         self.classifier = nn.Sequential(
-            nn.Linear(n_channels * n_time, n_classes, ),
+            nn.Linear(n_freq * n_time, n_classes, ),
             nn.Softmax(dim=-1)
         )
 
@@ -79,7 +78,6 @@ class SnnTCY(nn.Module):
 # ar_audio, sr = load_any_sample(ix=1, sample_name="backward")
 # ar_audio = ar_audio.reshape(1, 1, -1)
 # ar_out = SnnTCY(35, leaky_beta=1)(ar_audio)
-
 
 # sns.heatmap(ar_out.squeeze().detach().numpy())
 # plt.ylabel("Frequency Bins")
