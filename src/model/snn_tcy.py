@@ -8,25 +8,6 @@ from torchaudio.transforms import MelSpectrogram, Resample
 from src.settings import EPSILON
 
 
-def m5_2d_block(
-        in_dim, out_dim,
-        ks_freq, ks_time,
-        stride_freq, stride_time,
-        max_pool_freq, max_pool_time,
-        max_pool_freq_stride=None, max_pool_time_stride=None
-):
-    """ This implements the M5 block in 2D """
-    return nn.Sequential(
-        nn.Conv2d(in_dim, out_dim,
-                  kernel_size=(ks_freq, ks_time),
-                  stride=(stride_freq, stride_time)),
-        nn.BatchNorm2d(out_dim),
-        nn.ReLU(inplace=True),
-        nn.MaxPool2d((max_pool_freq, max_pool_time),
-                     (max_pool_freq_stride, max_pool_time_stride))
-    )
-
-
 class SnnTCY(nn.Module):
     def __init__(
             self,
