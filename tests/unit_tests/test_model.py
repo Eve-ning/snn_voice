@@ -6,12 +6,13 @@ from src.dataset.sample_dataset import SampleDataset
 from src.model.cnn_m5 import CnnM5
 from src.model.cnn_piczak import CnnPiczak
 from src.model.lit_wrapper import LitWrapper
+from src.model.srnn_hjh import SrnnHJH
 from src.model.snn_tcy import SnnTCY
 
 
 @pytest.mark.parametrize(
     'Model',
-    [CnnM5, CnnPiczak, SnnTCY]
+    [CnnM5, CnnPiczak, SnnTCY, SrnnHJH]
 )
 @pytest.mark.parametrize(
     'Dataset',
