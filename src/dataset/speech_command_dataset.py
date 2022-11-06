@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
-from typing import Tuple
+from typing import Tuple, Optional
 
+import pytorch_lightning as pl
 from torch.utils.data import DataLoader
 from torchaudio.datasets import SPEECHCOMMANDS
 
@@ -9,13 +10,16 @@ from src.utils.collate import CollateFn
 
 
 @dataclass
-class SpeechCommandDataset:
+class SpeechCommandDataset(pl.LightningDataModule):
     batch_size: int = 128
     classes: Tuple[str] = SPEECHCOMMAND_CLASSES
     data_dir = DATA_DIR / "SpeechCommands"
     download: bool = False
     num_workers: int = 0
     dl_kwargs: dict = field(default_factory=dict)
+    train_ds = None
+    val_ds = None
+    test_ds = None
 
     def __post_init__(self):
         self.collate_fn = CollateFn(SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES)
@@ -24,17 +28,16 @@ class SpeechCommandDataset:
                           'collate_fn': self.collate_fn,
                           'num_workers': self.num_workers}
 
-    def train_dl(self):
-        train_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="training")
-        return DataLoader(train_ds, shuffle=True, **self.dl_kwargs)
+    def setup(self, stage: Optional[str] = None) -> None:
+        self.train_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="training")
+        self.val_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="validation")
+        self.test_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="testing")
 
-    def val_dl(self):
-        val_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="validation")
-        return DataLoader(val_ds, **self.dl_kwargs)
+    def train_dataloader(self):
+        return DataLoader(self.train_ds, shuffle=True, **self.dl_kwargs)
 
-    def test_dl(self):
-        test_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="testing")
-        return DataLoader(test_ds, **self.dl_kwargs)
+    def val_dataloader(self):
+        return DataLoader(self.val_ds, **self.dl_kwargs)
 
-    def dls(self):
-        return self.train_dl(), self.val_dl(), self.test_dl()
+    def test_dataloader(self):
+        return DataLoader(self.test_ds, **self.dl_kwargs)
