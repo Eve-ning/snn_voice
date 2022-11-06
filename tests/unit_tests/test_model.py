@@ -4,19 +4,20 @@ import torch
 
 from src.dataset.sample_dataset import SampleDataset
 from src.model.cnn_m5 import CnnM5
-from src.model.cnn_mel import CnnMel
+from src.model.cnn_piczak import CnnPiczak
 from src.model.lit_wrapper import LitWrapper
+from src.model.snn_tcy import SnnTCY
 
 
 @pytest.mark.parametrize(
     'Model',
-    [CnnM5, CnnMel]
+    [CnnM5, CnnPiczak, SnnTCY]
 )
 @pytest.mark.parametrize(
     'Dataset',
     [SampleDataset, ]
 )
-def test_m5(Model, Dataset):
+def test_models(Model, Dataset):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using {device} Backend!")
 

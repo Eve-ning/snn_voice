@@ -1,8 +1,11 @@
 from typing import Tuple
 
+import snntorch as snn
 import torch
 import torch.nn as nn
 from torchaudio.transforms import MelSpectrogram, Resample
+
+from src.settings import EPSILON
 
 
 def m5_2d_block(
@@ -24,32 +27,26 @@ def m5_2d_block(
     )
 
 
-class CnnMel(nn.Module):
+class SnnTCY(nn.Module):
     def __init__(
             self,
             n_classes: int,
             resample: Tuple[int, int] = (16000, 8000),
             n_freq: int = 60,
             n_time: int = 41,
-            n_channel=80,
+            leaky_beta=0.85,
             *args,
             **kwargs
     ):
-        """ Implements the MelSpectrogram extraction before the CNN blocks
-
-        Notes:
-            This references the paper:
-            Piczak, Karol J. "Environmental sound classification with convolutional neural networks."
-            2015 IEEE 25th international workshop on machine learning for signal processing (MLSP). IEEE, 2015.
+        """ Implements the SNN model proposed by Tan Chiah Ying
 
         Args:
             n_classes: Number of classes to output
             resample: The initial and the resulting sample rate as a tuple
             n_freq: Number of mel scale frequency bins
             n_time: Number of time bins
-            n_channel: Number of channels to use for intermediate CNN blocks.
         """
-        super(CnnMel, self).__init__()
+        super(SnnTCY, self).__init__()
         n_fft = int(resample[1] / (n_time - 1) * 2)
 
         self.feature_extraction = nn.Sequential(
@@ -59,19 +56,31 @@ class CnnMel(nn.Module):
                            normalized=True,
                            norm="slaney",
                            n_mels=n_freq),
-            m5_2d_block(1, n_channel, 57, 6, 1, 1, 4, 3, 1, 3),
-            m5_2d_block(n_channel, n_channel, 1, 3, 1, 1, 1, 3, 1, 3),
-            nn.AdaptiveAvgPool2d((1, 1))
         )
+        self.spike_gen = snn.Leaky(beta=leaky_beta, init_hidden=True)
         self.flatten = nn.Flatten()
         self.classifier = nn.Sequential(
-            nn.Linear(n_channel, n_classes),
-            nn.LogSoftmax(dim=-1)
+            nn.Linear(n_freq * n_time, n_classes, ),
+            nn.Softmax(dim=-1)
         )
 
     def forward(self, x):
-        x = torch.log(self.feature_extraction(x) + 1e-3)
+        x = torch.log(self.feature_extraction(x) + EPSILON)
         x = (x - x.mean()) / (x.std())
+        x = self.spike_gen(x)
         x = self.flatten(x)
         x = self.classifier(x)
         return x
+
+# from src.utils.load import load_any_sample
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+# ar_audio, sr = load_any_sample(ix=1, sample_name="backward")
+# ar_audio = ar_audio.reshape(1, 1, -1)
+# ar_out = SnnTCY(35, leaky_beta=1)(ar_audio)
+
+# sns.heatmap(ar_out.squeeze().detach().numpy())
+# plt.ylabel("Frequency Bins")
+# plt.xlabel("Time Bins")
+# plt.tight_layout()
+# plt.show()
