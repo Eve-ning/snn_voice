@@ -1,6 +1,7 @@
 from dataclasses import dataclass, field
 from typing import Tuple
 
+import pytorch_lightning as pl
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchaudio import load
 
@@ -24,7 +25,7 @@ class SampleDatasetBase(Dataset):
 
 
 @dataclass
-class SampleDataset:
+class SampleDataModule(pl.LightningDataModule):
     """ This is a 3-file per class sample dataset from SpeechCommands V2 """
     batch_size: int = 4
     classes: Tuple[str] = SPEECHCOMMAND_CLASSES
@@ -33,6 +34,7 @@ class SampleDataset:
     dl_kwargs: dict = field(default_factory=dict)
 
     def __post_init__(self):
+        super(SampleDataModule, self).__init__()
         self.collate_fn = CollateFn(SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES)
         ds = SampleDatasetBase(self.data_dir)
         ds_ea_size = int(len(ds) // 3)
@@ -42,14 +44,11 @@ class SampleDataset:
                           'collate_fn': self.collate_fn,
                           'num_workers': self.num_workers}
 
-    def train_dl(self):
+    def train_dataloader(self):
         return DataLoader(self.train_ds, shuffle=True, **self.dl_kwargs)
 
-    def val_dl(self):
+    def val_dataloader(self):
         return DataLoader(self.val_ds, **self.dl_kwargs)
 
-    def test_dl(self):
+    def test_dataloader(self):
         return DataLoader(self.test_ds, **self.dl_kwargs)
-
-    def dls(self):
-        return self.train_dl(), self.val_dl(), self.test_dl()
