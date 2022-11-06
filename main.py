@@ -8,7 +8,7 @@ from snntorch import spikegen
 from torchaudio import load
 from torchaudio.transforms import MelSpectrogram
 
-from src.dataset.sample_dataset import SampleDataset
+from src.datamodule.sample_datamodule import SampleDataset
 
 ds = SampleDataset()
 # %%

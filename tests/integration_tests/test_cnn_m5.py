@@ -1,13 +1,13 @@
 import pytorch_lightning as pl
 
-from src.dataset.speech_command_dataset import SpeechCommandDataset
+from src.datamodule.speech_command_datamodule import SpeechCommandDataModule
 from src.model.cnn_m5 import CnnM5
 from src.model.lit_wrapper import LitWrapper
 from tests.evaluate import evaluate_model
 
 
 def test_cnn_m5():
-    ds = SpeechCommandDataset(dl_kwargs={'pin_memory': True}, num_workers=3)
+    ds = SpeechCommandDataModule(dl_kwargs={'pin_memory': True}, num_workers=3)
     model = LitWrapper(CnnM5(len(ds.classes)), ds.classes, lr=0.01)
 
     trainer = pl.Trainer(
