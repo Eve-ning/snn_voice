@@ -10,7 +10,7 @@ from src.utils.collate import CollateFn
 
 
 @dataclass
-class SpeechCommandDataset(pl.LightningDataModule):
+class SpeechCommandDataModule(pl.LightningDataModule):
     batch_size: int = 128
     classes: Tuple[str] = SPEECHCOMMAND_CLASSES
     data_dir = DATA_DIR / "SpeechCommands"
@@ -22,6 +22,7 @@ class SpeechCommandDataset(pl.LightningDataModule):
     test_ds = None
 
     def __post_init__(self):
+        super(SpeechCommandDataModule, self).__init__()
         self.collate_fn = CollateFn(SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES)
         self.dl_kwargs = {**self.dl_kwargs,
                           'batch_size': self.batch_size,
