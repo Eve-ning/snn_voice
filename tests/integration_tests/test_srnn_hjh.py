@@ -9,7 +9,7 @@ from tests.evaluate import evaluate_model
 def test_srnn_hjh():
     ds = SpeechCommandDataset(batch_size=128, num_workers=3, dl_kwargs={'pin_memory': True})
     model = LitWrapper(SrnnHJH(
-        len(ds.classes), lstm_n_layers=1, lstm_n_hidden=48, n_time=16, resample=(16000,8000)
+        len(ds.classes), lstm_n_layers=1, lstm_n_hidden=48, n_time=16, resample=(16000, 8000)
     ), ds.classes, lr=0.01).to('cuda')
 
     trainer = pl.Trainer(
