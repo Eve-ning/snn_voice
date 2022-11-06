@@ -4,6 +4,8 @@ import torch
 import torch.nn as nn
 from torchaudio.transforms import MelSpectrogram, Resample
 
+from src.settings import EPSILON
+
 
 def m5_2d_block(
         in_dim, out_dim,
@@ -52,13 +54,15 @@ class CnnPiczak(nn.Module):
         super(CnnPiczak, self).__init__()
         n_fft = int(resample[1] / (n_time - 1) * 2)
 
-        self.feature_extraction = nn.Sequential(
+        self.preprocess = nn.Sequential(
             Resample(resample[0], resample[1]),
             MelSpectrogram(sample_rate=resample[1],
                            n_fft=n_fft,
                            normalized=True,
                            norm="slaney",
-                           n_mels=n_freq),
+                           n_mels=n_freq)
+        )
+        self.feature_extraction = nn.Sequential(
             m5_2d_block(1, n_channel, 57, 6, 1, 1, 4, 3, 1, 3),
             m5_2d_block(n_channel, n_channel, 1, 3, 1, 1, 1, 3, 1, 3),
             nn.AdaptiveAvgPool2d((1, 1))
@@ -66,11 +70,12 @@ class CnnPiczak(nn.Module):
         self.flatten = nn.Flatten()
         self.classifier = nn.Sequential(
             nn.Linear(n_channel, n_classes),
-            nn.LogSoftmax(dim=-1)
+            nn.Softmax(dim=-1)
         )
 
     def forward(self, x):
-        x = torch.log(self.feature_extraction(x) + 1e-3)
+        x = torch.log(self.preprocess(x) + EPSILON)
+        x = self.feature_extraction(x)
         x = (x - x.mean()) / (x.std())
         x = self.flatten(x)
         x = self.classifier(x)
