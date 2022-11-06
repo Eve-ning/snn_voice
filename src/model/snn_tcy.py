@@ -8,7 +8,6 @@ from torchaudio.transforms import MelSpectrogram, Resample
 from src.settings import EPSILON
 
 
-
 def m5_2d_block(
         in_dim, out_dim,
         ks_freq, ks_time,
@@ -60,11 +59,6 @@ class SnnTCY(nn.Module):
                            n_mels=n_freq),
         )
         self.spike_gen = snn.Leaky(beta=leaky_beta, init_hidden=True)
-        self.cnn_block = nn.Sequential(
-            nn.Conv2d(1, n_channels, (n_freq, 5), padding=(0, 2)),
-            nn.ReLU(inplace=True),
-            nn.BatchNorm2d(n_channels)
-        )
         self.flatten = nn.Flatten()
         self.classifier = nn.Sequential(
             nn.Linear(n_channels * n_time, n_classes, ),
@@ -75,7 +69,6 @@ class SnnTCY(nn.Module):
         x = torch.log(self.feature_extraction(x) + EPSILON)
         x = (x - x.mean()) / (x.std())
         x = self.spike_gen(x)
-        x = self.cnn_block(x)
         x = self.flatten(x)
         x = self.classifier(x)
         return x
