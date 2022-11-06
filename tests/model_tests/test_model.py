@@ -4,13 +4,13 @@ import torch
 
 from src.dataset.sample_dataset import SampleDataset
 from src.model.cnn_m5 import CnnM5
-from src.model.cnn_mel import CnnMel
+from src.model.cnn_piczak import CnnPiczak
 from src.model.lit_wrapper import LitWrapper
 
 
 @pytest.mark.parametrize(
     'Model',
-    [CnnM5, CnnMel]
+    [CnnM5, CnnPiczak]
 )
 @pytest.mark.parametrize(
     'Dataset',
