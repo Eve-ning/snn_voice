@@ -7,15 +7,20 @@ from tests.evaluate import evaluate_model
 
 
 def test_cnn_piczak():
-    ds = SpeechCommandDataModule(dl_kwargs={'pin_memory': True}, num_workers=3)
-    model = LitWrapper(CnnPiczak(len(ds.classes), n_channel=20), ds.classes, lr=0.01)
-
+    dm = SpeechCommandDataModule()  # dl_kwargs={'pin_memory': True}, num_workers=3)
+    model = LitWrapper(CnnPiczak(len(dm.classes), n_channel=20), dm.classes, lr=0.01)
+    # logger = TensorBoardLogger("test", log_graph=True)
     trainer = pl.Trainer(
         default_root_dir="cnn_piczak/",
         max_epochs=1,
-        accelerator='gpu'
+        limit_train_batches=4,
+        limit_val_batches=1,
+        limit_test_batches=1,
+        accelerator='gpu',
+        # logger=logger
         # fast_dev_run=True
     )
-    evaluate_model(trainer, model, ds)
+
+    evaluate_model(trainer, model, dm)
 
     # pred = trainer.predict(model, dataloaders=test_dl)
