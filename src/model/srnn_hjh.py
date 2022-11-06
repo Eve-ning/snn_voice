@@ -3,10 +3,10 @@ from typing import Tuple
 import snntorch as snn
 import torch
 import torch.nn as nn
-from torchaudio.transforms import MelSpectrogram, Resample
+from torchaudio.transforms import Resample
 
 from src.settings import EPSILON
-from src.utils.load import load_any_sample
+from src.utils.log_mel_spectrogram import LogMelSpectrogram
 
 
 class SrnnHJH(nn.Module):
@@ -37,13 +37,11 @@ class SrnnHJH(nn.Module):
         self.lstm_n_hidden = lstm_n_hidden
         self.lstm_n_layers = lstm_n_layers
 
-        self.feature_extraction = nn.Sequential(
+        self.preprocessing = nn.Sequential(
             Resample(resample[0], resample[1]),
-            MelSpectrogram(sample_rate=resample[1],
-                           n_fft=n_fft,
-                           normalized=True,
-                           norm="slaney",
-                           n_mels=n_freq),
+            LogMelSpectrogram(sample_rate=resample[1],
+                              n_fft=n_fft,
+                              n_mels=n_freq),
         )
         self.spike_gen = snn.Leaky(beta=leaky_beta, init_hidden=True)
         self.bilstm = nn.LSTM(
@@ -60,10 +58,10 @@ class SrnnHJH(nn.Module):
         )
 
     def forward(self, x):
-        x = torch.log(self.feature_extraction(x) + EPSILON)
+        x = torch.log(self.preprocessing(x) + EPSILON)
         x = (x - x.mean()) / (x.std())
         x = self.spike_gen(x)
-        x, _ = self.bilstm(x.sum(dim=1).permute(0, 2,1))
+        x, _ = self.bilstm(x.sum(dim=1).permute(0, 2, 1))
         x = self.flatten(x[:, -1])
         x = self.classifier(x)
         return x
@@ -77,7 +75,7 @@ class SrnnHJH(nn.Module):
 # model = SrnnHJH(35, leaky_beta=1, lstm_n_layers=1)
 # ar_out = model(ar_audio)
 # print(ar_out.shape)
-#%%
+# %%
 #
 # sns.heatmap(ar_out.detach().numpy()[0])
 # plt.ylabel("Frequency Bins")

@@ -41,8 +41,11 @@ class CnnM5(nn.Module):
         """
         super(CnnM5, self).__init__()
 
+        self.preprocess = nn.Sequential(
+            Resample(resample[0], resample[1])
+        )
+
         self.feature_extraction = nn.Sequential(
-            Resample(resample[0], resample[1]),
             m5_block(1, n_channel, ks=80, stride=stride),
             m5_block(n_channel, n_channel, ks=3),
             m5_block(n_channel, n_channel * 2, ks=3),
@@ -55,7 +58,9 @@ class CnnM5(nn.Module):
         )
 
     def forward(self, x):
+        x = self.preprocess(x)
         x = self.feature_extraction(x)
+
         # We expect a shape of (BS, 64, X) X is variable
         # To solve the variable issue, we average the last dimension
         x = F.avg_pool1d(x, x.shape[-1])
