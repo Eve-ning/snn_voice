@@ -2,9 +2,9 @@ from typing import Tuple
 
 import torch
 import torch.nn as nn
-from torchaudio.transforms import MelSpectrogram, Resample
+from torchaudio.transforms import Resample
 
-from src.settings import EPSILON
+from src.utils.log_mel_spectrogram import LogMelSpectrogram
 
 
 def m5_2d_block(
@@ -27,6 +27,9 @@ def m5_2d_block(
 
 
 class CnnPiczak(nn.Module):
+    @property
+    def example_input_array(self):
+        return torch.randn(1, 1, 16000)
     def __init__(
             self,
             n_classes: int,
@@ -56,12 +59,11 @@ class CnnPiczak(nn.Module):
 
         self.preprocess = nn.Sequential(
             Resample(resample[0], resample[1]),
-            MelSpectrogram(sample_rate=resample[1],
-                           n_fft=n_fft,
-                           normalized=True,
-                           norm="slaney",
-                           n_mels=n_freq)
+            LogMelSpectrogram(sample_rate=resample[1],
+                              n_fft=n_fft,
+                              n_mels=n_freq)
         )
+
         self.feature_extraction = nn.Sequential(
             m5_2d_block(1, n_channel, 57, 6, 1, 1, 4, 3, 1, 3),
             m5_2d_block(n_channel, n_channel, 1, 3, 1, 1, 1, 3, 1, 3),
@@ -74,7 +76,7 @@ class CnnPiczak(nn.Module):
         )
 
     def forward(self, x):
-        x = torch.log(self.preprocess(x) + EPSILON)
+        x = self.preprocess(x)
         x = self.feature_extraction(x)
         x = (x - x.mean()) / (x.std())
         x = self.flatten(x)

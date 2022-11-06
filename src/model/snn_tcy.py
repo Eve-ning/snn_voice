@@ -3,9 +3,10 @@ from typing import Tuple
 import snntorch as snn
 import torch
 import torch.nn as nn
-from torchaudio.transforms import MelSpectrogram, Resample
+from torchaudio.transforms import Resample
 
 from src.settings import EPSILON
+from src.utils.log_mel_spectrogram import LogMelSpectrogram
 
 
 class SnnTCY(nn.Module):
@@ -30,13 +31,11 @@ class SnnTCY(nn.Module):
         super(SnnTCY, self).__init__()
         n_fft = int(resample[1] / (n_time - 1) * 2)
 
-        self.feature_extraction = nn.Sequential(
+        self.preprocess = nn.Sequential(
             Resample(resample[0], resample[1]),
-            MelSpectrogram(sample_rate=resample[1],
-                           n_fft=n_fft,
-                           normalized=True,
-                           norm="slaney",
-                           n_mels=n_freq),
+            LogMelSpectrogram(sample_rate=resample[1],
+                              n_fft=n_fft,
+                              n_mels=n_freq),
         )
         self.spike_gen = snn.Leaky(beta=leaky_beta, init_hidden=True)
         self.flatten = nn.Flatten()
@@ -46,7 +45,7 @@ class SnnTCY(nn.Module):
         )
 
     def forward(self, x):
-        x = torch.log(self.feature_extraction(x) + EPSILON)
+        x = torch.log(self.preprocess(x) + EPSILON)
         x = (x - x.mean()) / (x.std())
         x = self.spike_gen(x)
         x = self.flatten(x)
