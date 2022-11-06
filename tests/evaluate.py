@@ -1,5 +1,6 @@
-import torch
 import pytorch_lightning as pl
+import torch
+
 
 def evaluate_model(trainer: pl.Trainer,
                    model: pl.LightningModule,

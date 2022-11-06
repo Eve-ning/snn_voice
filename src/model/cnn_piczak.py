@@ -1,6 +1,5 @@
 from typing import Tuple
 
-import torch
 import torch.nn as nn
 from torchaudio.transforms import Resample
 
@@ -27,9 +26,7 @@ def m5_2d_block(
 
 
 class CnnPiczak(nn.Module):
-    @property
-    def example_input_array(self):
-        return torch.randn(1, 1, 16000)
+
     def __init__(
             self,
             n_classes: int,
