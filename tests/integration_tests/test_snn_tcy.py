@@ -1,13 +1,13 @@
 import pytorch_lightning as pl
 
-from src.dataset.speech_command_dataset import SpeechCommandDataset
+from src.datamodule.speech_command_datamodule import SpeechCommandDataModule
 from src.model.lit_wrapper import LitWrapper
 from src.model.snn_tcy import SnnTCY
 from tests.evaluate import evaluate_model
 
 
 def test_snn_tcy():
-    ds = SpeechCommandDataset(batch_size=32)
+    ds = SpeechCommandDataModule(batch_size=32)
     model = LitWrapper(SnnTCY(len(ds.classes)), ds.classes, lr=0.01)
 
     trainer = pl.Trainer(
