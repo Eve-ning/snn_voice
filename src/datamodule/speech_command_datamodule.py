@@ -1,44 +1,90 @@
-from dataclasses import dataclass, field
-from typing import Tuple, Optional
+from pathlib import Path
 
 import pytorch_lightning as pl
+import torch
+from sklearn.preprocessing import LabelEncoder
 from torch.utils.data import DataLoader
 from torchaudio.datasets import SPEECHCOMMANDS
+from torchaudio.transforms import Resample
 
-from src.settings import SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES, DATA_DIR
-from src.utils.collate import CollateFn
+from src.settings import DATA_DIR
 
 
-@dataclass
-class SpeechCommandDataModule(pl.LightningDataModule):
-    batch_size: int = 128
-    classes: Tuple[str] = SPEECHCOMMAND_CLASSES
-    data_dir = DATA_DIR / "SpeechCommands"
-    download: bool = False
-    num_workers: int = 0
-    dl_kwargs: dict = field(default_factory=dict)
-    train_ds = None
-    val_ds = None
-    test_ds = None
+class SpeechCommandsDataModule(pl.LightningDataModule):
+    def __init__(
+            self,
+            data_dir: Path = DATA_DIR,
+            batch_size: int = BATCH_SIZE,
+    ):
+        """ Creates a DataModule to be used for fitting models through
+        PyTorchLightning """
+        super().__init__()
+        self.data_dir = data_dir
+        self.batch_size = batch_size
+        self.le = LabelEncoder()
+        self.downsample = Resample(SAMPLE_RATE, NEW_SAMPLE_RATE)
+        # self.prepare_data()
+        # self.setup()
 
-    def __post_init__(self):
-        super(SpeechCommandDataModule, self).__init__()
-        self.collate_fn = CollateFn(SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES)
-        self.dl_kwargs = {**self.dl_kwargs,
-                          'batch_size': self.batch_size,
-                          'collate_fn': self.collate_fn,
-                          'num_workers': self.num_workers}
+    def prepare_data(self):
+        """ Ran once to download all data necessary before data setup """
+        SPEECHCOMMANDS(self.data_dir.as_posix(), download=True)
 
-    def setup(self, stage: Optional[str] = None) -> None:
-        self.train_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="training")
-        self.val_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="validation")
-        self.test_ds = SPEECHCOMMANDS(self.data_dir, download=self.download, subset="testing")
+    def setup(self, stage=""):
+        """ Sets up the train, validation & test """
+        self.le.fit(self.classes)
+        self.train = SPEECHCOMMANDS(self.data_dir.as_posix(), subset="training")
+        self.val = SPEECHCOMMANDS(self.data_dir.as_posix(), subset="validation")
+        self.test = SPEECHCOMMANDS(self.data_dir.as_posix(), subset="testing")
+
+    @property
+    def classes(self):
+        """ Gets the class labels from the downloaded data dir """
+        return [
+            d.name
+            for d
+            in (self.data_dir / "SpeechCommands/speech_commands_v0.02/").glob("*/")
+            if "." not in d.name and
+               d.name.islower() and
+               not d.name.startswith("_")
+        ]
+
+    def collate_fn_factory(self):
+        """ Creates the collate_fn using a factory
+
+        Notes:
+          A factory is necessary to include the self.le via a non-arg
+        """
+
+        def collate_fn(x):
+            ars = [i[0].squeeze() for i in x]
+            labs = [i[2] for i in x]
+            lab_ixs = torch.tensor(self.le.transform(labs), dtype=int)
+
+            ar = nn.utils.rnn.pad_sequence(ars, batch_first=True).unsqueeze(1)
+            ar = self.downsample(ar)
+            return (
+                ar,  # ar: B x 1 x T
+                lab_ixs,  # lab: 0, 1, ... , 34
+                # [i[1] for i in x], # sr
+                # [i[3] for i in x], # uid
+                # [i[4] for i in x], # wid
+            )
+
+        return collate_fn
 
     def train_dataloader(self):
-        return DataLoader(self.train_ds, shuffle=True, **self.dl_kwargs)
+        return DataLoader(self.train, batch_size=self.batch_size, shuffle=True,
+                          collate_fn=self.collate_fn_factory())
 
     def val_dataloader(self):
-        return DataLoader(self.val_ds, **self.dl_kwargs)
+        return DataLoader(self.val, batch_size=self.batch_size,
+                          collate_fn=self.collate_fn_factory(), shuffle=True)
 
     def test_dataloader(self):
-        return DataLoader(self.test_ds, **self.dl_kwargs)
+        return DataLoader(self.test, batch_size=self.batch_size,
+                          collate_fn=self.collate_fn_factory())
+
+    def predict_dataloader(self):
+        return DataLoader(self.val, batch_size=self.batch_size,
+                          collate_fn=self.collate_fn_factory())
