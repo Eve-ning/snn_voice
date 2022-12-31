@@ -21,6 +21,7 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         """ Creates a DataModule to be used for fitting models through
         PyTorchLightning """
         super().__init__()
+        data_dir.mkdir(parents=True, exist_ok=True)
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.le = LabelEncoder()
