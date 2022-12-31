@@ -15,13 +15,11 @@ class MxCommon(pl.LightningModule, ABC):
 
     def __init__(
             self,
-            le: LabelEncoder,
             lr: float = LEARNING_RATE,
             topk: Tuple[int] = TOPK,
             n_classes: int = len(SPEECHCOMMAND_CLASSES)
     ):
         super().__init__()
-        self.le = le
         self.lr = lr
         self.topk = topk
         self.n_classes = n_classes
