@@ -3,18 +3,20 @@ from pathlib import Path
 import pytorch_lightning as pl
 import torch
 from sklearn.preprocessing import LabelEncoder
+from torch import nn
 from torch.utils.data import DataLoader
 from torchaudio.datasets import SPEECHCOMMANDS
 from torchaudio.transforms import Resample
 
-from src.settings import DATA_DIR
+from src.settings import DATA_DIR, SPEECHCOMMAND_SR
 
 
 class SpeechCommandsDataModule(pl.LightningDataModule):
     def __init__(
             self,
             data_dir: Path = DATA_DIR,
-            batch_size: int = BATCH_SIZE,
+            batch_size: int = 16,
+            downsample: int = 4000
     ):
         """ Creates a DataModule to be used for fitting models through
         PyTorchLightning """
@@ -22,7 +24,7 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.le = LabelEncoder()
-        self.downsample = Resample(SAMPLE_RATE, NEW_SAMPLE_RATE)
+        self.downsample = Resample(SPEECHCOMMAND_SR, downsample)
         # self.prepare_data()
         # self.setup()
 
