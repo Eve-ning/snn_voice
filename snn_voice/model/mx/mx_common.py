@@ -85,10 +85,13 @@ class MxCommon(pl.LightningModule, ABC):
             lr=self.lr,
             weight_decay=0.0001
         )
+        steps_per_epoch = self.trainer.limit_train_batches \
+            if self.trainer.limit_train_batches > 1.0 \
+            else len(self.trainer.datamodule.train_dataloader())
         lr_scheduler = OneCycleLR(
             optimizer,
             max_lr=self.lr * 10,
-            steps_per_epoch=len(self.trainer.datamodule.train_dataloader()) // (self.trainer.datamodule.batch_size * 2),
+            steps_per_epoch=steps_per_epoch,
             epochs=self.trainer.max_epochs,
             verbose=True
         )
