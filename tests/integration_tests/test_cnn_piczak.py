@@ -1,8 +1,8 @@
 import pytorch_lightning as pl
 
-from src.datamodule.speech_command_datamodule import SpeechCommandDataModule
-from src.model.cnn_piczak import CnnPiczak
-from src.model.lit_wrapper import LitWrapper
+from snn_voice.datamodule.speech_command_datamodule import SpeechCommandDataModule
+from snn_voice.model.cnn_piczak import CnnPiczak
+from snn_voice.model.lit_wrapper import LitWrapper
 from tests.evaluate import evaluate_model
 
 

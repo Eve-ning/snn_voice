@@ -2,12 +2,12 @@ import pytest
 import pytorch_lightning as pl
 import torch
 
-from src.datamodule.sample_datamodule import SampleDataModule
-from src.model.cnn_m5 import CnnM5
-from src.model.cnn_piczak import CnnPiczak
-from src.model.lit_wrapper import LitWrapper
-from src.model.snn_tcy import SnnTCY
-from src.model.srnn_hjh import SrnnHJH
+from snn_voice.datamodule.sample_datamodule import SampleDataModule
+from snn_voice.model.cnn_m5 import CnnM5
+from snn_voice.model.cnn_piczak import CnnPiczak
+from snn_voice.model.lit_wrapper import LitWrapper
+from snn_voice.model.snn_tcy import SnnTCY
+from snn_voice.model.srnn_hjh import SrnnHJH
 
 
 @pytest.mark.parametrize(
