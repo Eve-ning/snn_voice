@@ -19,3 +19,5 @@ class M5CNN(MxCNN):
                 ('conv_blk4', MxCNNBlock(256, 512, 3, 1)),
             ])
         )
+
+M5CNN(1)

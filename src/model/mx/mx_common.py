@@ -107,4 +107,3 @@ class MxCommon(pl.LightningModule):
     @abstractmethod
     def step(self, batch):
         ...
-

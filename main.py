@@ -8,10 +8,10 @@ dm = SpeechCommandsDataModule()
 
 model_cnn = M5CNN(dm.le)
 model_snn = M5TRSAFS(dm.le)
-
+#
 trainer = Trainer(fast_dev_run=True)
 trainer.fit(model_cnn, datamodule=dm)
-trainer.predict(model_cnn, datamodule=dm)
-
-trainer.fit(model_snn, datamodule=dm)
-trainer.predict(model_snn, datamodule=dm)
+# trainer.predict(model_cnn, datamodule=dm)
+#
+# trainer.fit(model_snn, datamodule=dm)
+# trainer.predict(model_snn, datamodule=dm)
