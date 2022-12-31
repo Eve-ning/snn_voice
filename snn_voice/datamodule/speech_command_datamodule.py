@@ -26,8 +26,8 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         self.batch_size = batch_size
         self.le = LabelEncoder()
         self.downsample = Resample(SPEECHCOMMAND_SR, downsample)
-        # self.prepare_data()
-        # self.setup()
+        self.prepare_data()
+        self.setup()
 
     def prepare_data(self):
         """ Ran once to download all data necessary before data setup """
