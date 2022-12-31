@@ -1,45 +1,17 @@
-# %%
-from pathlib import Path
+from pytorch_lightning import Trainer
 
-import matplotlib.pyplot as plt
-import numpy as np
-import torch
-from snntorch import spikegen
-from torchaudio import load
-from torchaudio.transforms import MelSpectrogram
+from src.datamodule.speech_command_datamodule import SpeechCommandsDataModule
+from src.model.mx.m5_cnn import M5CNN
+from src.model.mx.m5_trsafs import M5TRSAFS
 
-from src.datamodule.sample_datamodule import SampleDataset
+dm = SpeechCommandsDataModule()
 
-ds = SampleDataset()
-# %%
+model_cnn = M5CNN(dm.le)
+model_snn = M5TRSAFS(dm.le)
 
-backward_path = Path("data/SpeechCommands/SpeechCommands/speech_commands_v0.02/backward/")
-backward_fp_iter = backward_path.glob("*.wav")
+trainer = Trainer(fast_dev_run=True)
+trainer.fit(model_cnn, datamodule=dm)
+trainer.predict(model_cnn, datamodule=dm)
 
-fig, axs = plt.subplots(5, 1)
-for ax in axs.flatten():
-    ar, sr = load(next(backward_fp_iter).as_posix())
-
-    mel_spectrogram = MelSpectrogram(
-        sample_rate=sr,
-        n_fft=500,
-        center=True,
-        pad_mode="reflect",
-        power=2.0,
-        normalized=True,
-        norm="slaney",
-        n_mels=16,
-        mel_scale="htk",
-    )
-    ar_spec = mel_spectrogram(ar)
-    ar_spec_log = torch.log(ar_spec)
-    ar_spec_log = (ar_spec_log - ar_spec_log.min()) / (ar_spec_log.max() - ar_spec_log.min())
-
-    ar_spike = spikegen.delta(ar_spec_log[0], threshold=0.01, padding=True)
-
-    ax.imshow(ar_spike)
-plt.show()
-# spikegen.latency(a, num_steps=3, normalize=True, linear=True)
-# %%
-plt.imshow(np.log(ar_spec[0]))
-plt.show()
+trainer.fit(model_snn, datamodule=dm)
+trainer.predict(model_snn, datamodule=dm)

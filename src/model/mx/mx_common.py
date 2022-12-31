@@ -1,35 +1,34 @@
-from dataclasses import dataclass
+from abc import abstractmethod
+from dataclasses import dataclass, field
 from typing import Tuple
 
 import pytorch_lightning as pl
 import torch
-import torch.nn as nn
 from sklearn.preprocessing import LabelEncoder
+from torch import nn
 from torch.optim.lr_scheduler import StepLR
 
 
 @dataclass
-class M5Common(pl.LightningModule):
+class MxCommon(pl.LightningModule):
+    """ Defines an abstract class that all M Models can inherit from """
     le: LabelEncoder
-    conv_blks: nn.Module
+
+    conv_blks: nn.Module = field(init=False, default_factory=lambda: nn.Sequential)
     lr: float = 0.01
     topk: Tuple[int] = (TOPK := (1, 2, 5))
-
     classifier: nn.Module = nn.Linear(512, (N_CLASSES := 35))
     avg_pool = nn.AdaptiveAvgPool1d(1)
     criterion = nn.CrossEntropyLoss()
 
+    def __new__(cls, *args, **k):
+        inst = super().__new__(cls)
+        nn.Module.__init__(inst)
+        return inst
+
     def __post_init__(self):
-        """ Defines an abstract class that all M Models can inherit from """
-        super().__init__()
-        self.example_input_array = torch.rand([32, 1, NEW_SAMPLE_RATE])
-
-    def forward(self, x):
-        x = self.conv_blks(x)
-        x = self.avg_pool(x).permute(0, 2, 1)
-        x = self.classifier(x)
-
-        return x
+        # We'll set a static example, exposing the correct sizes is too much of a workaround
+        self.example_input_array = torch.rand([32, 1, 4000])
 
     def training_step(self, batch, batch_ix):
         x, y_pred_l, y_true = self.step(batch)
@@ -46,9 +45,15 @@ class M5Common(pl.LightningModule):
 
         self.log('val_loss', loss)
         self.log_topk(y_pred_l, y_true, self.topk, validation=True)
+
         return loss
 
     def predict_step(self, batch, batch_ix):
+        """ Performs a batch prediction
+
+        Returns:
+            The batch input, predicted label, true label as a 3-tuple
+        """
         x, y_pred_l, y_true = self.step(batch)
         y_pred = torch.argmax(y_pred_l, dim=1)
         y_pred_lab = self.le.inverse_transform(y_pred)
@@ -94,3 +99,12 @@ class M5Common(pl.LightningModule):
                 # },
             }
         }
+
+    @abstractmethod
+    def forward(self, x):
+        ...
+
+    @abstractmethod
+    def step(self, batch):
+        ...
+

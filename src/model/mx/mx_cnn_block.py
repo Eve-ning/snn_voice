@@ -1,7 +1,7 @@
 import torch.nn as nn
 
 
-class M5Block(nn.Module):
+class MxCNNBlock(nn.Module):
     def __init__(self, in_chn, out_chn, ksize, step=1):
         super().__init__()
         self.conv = nn.Conv1d(in_chn, out_chn, ksize, step,
