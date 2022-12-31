@@ -5,7 +5,7 @@ import pytorch_lightning as pl
 import torch
 from sklearn.preprocessing import LabelEncoder
 from torch import nn
-from torch.optim.lr_scheduler import StepLR
+from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR, OneCycleLR
 
 from snn_voice.settings import SPEECHCOMMAND_CLASSES, TOPK, LEARNING_RATE
 
@@ -85,17 +85,19 @@ class MxCommon(pl.LightningModule, ABC):
             lr=self.lr,
             weight_decay=0.0001
         )
+        lr_scheduler = OneCycleLR(
+            optimizer,
+            max_lr=self.lr * 10,
+            steps_per_epoch=len(self.trainer.datamodule.train_dataloader()) // (self.trainer.datamodule.batch_size * 2),
+            epochs=self.trainer.max_epochs,
+            verbose=True
+        )
+
         return {
             "optimizer": optimizer,
             "lr_scheduler": {
-                "scheduler": StepLR(
-                    optimizer, 1, gamma=0.2, verbose=True
-                ),
-                # "scheduler": ReduceLROnPlateau(
-                # optimizer, 'min', patience=1, verbose=True
-                # ),
-                # "monitor": "val_loss",
-                # },
+                "scheduler": lr_scheduler,
+                "interval": "step"
             }
         }
 
