@@ -90,7 +90,7 @@ class MxCommon(pl.LightningModule, ABC):
             else len(self.trainer.datamodule.train_dataloader())
         lr_scheduler = OneCycleLR(
             optimizer,
-            max_lr=self.lr * 10,
+            max_lr=self.lr,
             steps_per_epoch=steps_per_epoch,
             epochs=self.trainer.max_epochs,
             # verbose=True
