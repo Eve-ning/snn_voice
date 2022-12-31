@@ -93,7 +93,7 @@ class MxCommon(pl.LightningModule, ABC):
             max_lr=self.lr * 10,
             steps_per_epoch=steps_per_epoch,
             epochs=self.trainer.max_epochs,
-            verbose=True
+            # verbose=True
         )
 
         return {
