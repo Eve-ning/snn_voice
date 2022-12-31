@@ -1,10 +1,9 @@
-from dataclasses import dataclass
+from abc import ABC
 
 from src.model.mx.mx_common import MxCommon
 
 
-@dataclass
-class MxCNN(MxCommon):
+class MxCNN(MxCommon, ABC):
 
     def forward(self, x):
         x = self.conv_blks(x)

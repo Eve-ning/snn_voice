@@ -1,14 +1,25 @@
-from dataclasses import dataclass
+from abc import ABC
 
 import torch
 
 from src.model.mx.mx_common import MxCommon
 
 
-@dataclass
-class MxSNN(MxCommon):
+class MxSNN(MxCommon, ABC):
     n_steps: int = 2
     lif_beta: float = 0.2
+
+    def __init__(
+            self,
+            n_steps: int = 2,
+            lif_beta: float = 0.2,
+            *args,
+            **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.n_steps = n_steps
+        self.lif_beta = lif_beta
+        self.example_input_array = torch.rand([2, 32, 1, 4000])
 
     def forward(self, xt):
         """ We should expect a T x B x t input"""

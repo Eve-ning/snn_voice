@@ -1,5 +1,4 @@
 from collections import OrderedDict
-from dataclasses import dataclass
 
 from torch import nn
 
@@ -7,10 +6,10 @@ from src.model.mx.mx_snn import MxSNN
 from src.model.mx.mx_snn_block import MxSNNBlock
 
 
-@dataclass
 class M5TRSAFS(MxSNN):
 
-    def __post_init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.conv_blks = nn.Sequential(
             OrderedDict([
                 ('conv_blk1', MxSNNBlock(1, 128, 80, self.lif_beta, 4)),
@@ -19,3 +18,4 @@ class M5TRSAFS(MxSNN):
                 ('conv_blk4', MxSNNBlock(256, 512, 3, self.lif_beta)),
             ])
         )
+        self.classifier = nn.Linear(512, self.n_classes)

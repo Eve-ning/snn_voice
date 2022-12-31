@@ -1,16 +1,16 @@
 from collections import OrderedDict
 from dataclasses import dataclass
-
+import torch
 import torch.nn as nn
 
 from src.model.mx.mx_cnn import MxCNN
 from src.model.mx.mx_cnn_block import MxCNNBlock
 
 
-@dataclass
-class M5CNN(MxCNN):
+class M5CNN(MxCNN, nn.Module):
 
-    def __post_init__(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.conv_blks = nn.Sequential(
             OrderedDict([
                 ('conv_blk1', MxCNNBlock(1, 128, 80, 4)),
@@ -20,4 +20,4 @@ class M5CNN(MxCNN):
             ])
         )
 
-M5CNN(1)
+        self.classifier = nn.Linear(512, self.n_classes)

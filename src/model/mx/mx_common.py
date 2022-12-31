@@ -1,5 +1,4 @@
-from abc import abstractmethod
-from dataclasses import dataclass, field
+from abc import abstractmethod, ABC
 from typing import Tuple
 
 import pytorch_lightning as pl
@@ -8,27 +7,32 @@ from sklearn.preprocessing import LabelEncoder
 from torch import nn
 from torch.optim.lr_scheduler import StepLR
 
+from src.settings import SPEECHCOMMAND_CLASSES, TOPK, LEARNING_RATE
 
-@dataclass
-class MxCommon(pl.LightningModule):
+
+class MxCommon(pl.LightningModule, ABC):
     """ Defines an abstract class that all M Models can inherit from """
-    le: LabelEncoder
 
-    conv_blks: nn.Module = field(init=False, default_factory=lambda: nn.Sequential)
-    lr: float = 0.01
-    topk: Tuple[int] = (TOPK := (1, 2, 5))
-    classifier: nn.Module = nn.Linear(512, (N_CLASSES := 35))
-    avg_pool = nn.AdaptiveAvgPool1d(1)
-    criterion = nn.CrossEntropyLoss()
+    def __init__(
+            self,
+            le: LabelEncoder,
+            lr: float = LEARNING_RATE,
+            topk: Tuple[int] = TOPK,
+            n_classes: int = len(SPEECHCOMMAND_CLASSES)
+    ):
+        super().__init__()
+        self.le = le
+        self.lr = lr
+        self.topk = topk
+        self.n_classes = n_classes
 
-    def __new__(cls, *args, **k):
-        inst = super().__new__(cls)
-        nn.Module.__init__(inst)
-        return inst
-
-    def __post_init__(self):
+        self.avg_pool = nn.AdaptiveAvgPool1d(1)
+        self.criterion = nn.CrossEntropyLoss()
         # We'll set a static example, exposing the correct sizes is too much of a workaround
         self.example_input_array = torch.rand([32, 1, 4000])
+
+        self.classifier = nn.Sequential()
+        self.conv_blks = nn.Sequential()
 
     def training_step(self, batch, batch_ix):
         x, y_pred_l, y_true = self.step(batch)
@@ -56,10 +60,7 @@ class MxCommon(pl.LightningModule):
         """
         x, y_pred_l, y_true = self.step(batch)
         y_pred = torch.argmax(y_pred_l, dim=1)
-        y_pred_lab = self.le.inverse_transform(y_pred)
-        y_true_lab = self.le.inverse_transform(y_true)
-
-        return x, y_pred_lab, y_true_lab
+        return x, y_pred, y_true
 
     def log_topk(self, y_pred_l, y_true, ks: Tuple[int] = (1, 2, 5),
                  validation: bool = False):

@@ -14,3 +14,6 @@ DATA_DIR = ROOT_DIR / "data"
 DATA_SAMPLE_DIR = ROOT_DIR / "data_sample"
 
 EPSILON = 1e-10
+
+LEARNING_RATE = 0.01
+TOPK = (1, 2, 5)
