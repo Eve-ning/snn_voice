@@ -1,5 +1,7 @@
 from dataclasses import dataclass, field
+from typing import Tuple
 
+import torch
 from matplotlib import pyplot as plt
 from torch import nn
 from torchvision.transforms import Resize, InterpolationMode
@@ -38,32 +40,42 @@ class ModelHook:
 
         self.hooks = []
 
-    def plot(self, n_samples: int = 25, nrows: int = 4):
+    def plot(self,
+             input_ar: torch.Tensor,
+             quantile_clamp: float = 0.85,
+             resize: Tuple[int, int] = (50, 500),
+             n_samples: int = 25):
         """ Plots the hist
 
         Args:
-          n_samples: Limit the number of samples (from 1 batch) to plot
-          nrows: Number of rows for the plot.
+            input_ar: Input Array to plot alongside the hist plot.
+            quantile_clamp: The quantile to clamp the values at.
+            resize: THe final size of each hist plot
+            n_samples: Limit the number of samples (from 1 batch) to plot
         """
 
-        def make_hist_grid(x, nrows: int = 4, normalize=True):
+        rs = Resize(resize, interpolation=InterpolationMode.NEAREST)
+
+        def clamp(ar):
+            ar = torch.abs(ar)
+            return torch.clamp(ar, 0, torch.quantile(ar, quantile_clamp))
+
+        def make_hist_grid(x):
             """ Makes the grid image from PyTorch-like B x H x W tensors.
 
             Notes:
               In the context of SpeechCommands, we have B x F x T. Thus, we also expand
               on the 2nd axes to mimic a grayscale channel.
             """
-            rs = Resize((50, 500), interpolation=InterpolationMode.NEAREST)
-            return rs(make_grid(x.unsqueeze(1), nrows, normalize=normalize)).permute(1, 2, 0)
+            x = clamp(x)
+            return rs(make_grid(x.unsqueeze(1), normalize=True)).permute(1, 2, 0)
 
-        fig, axs = plt.subplots(len(self.hist))
-        for ax, (hist_name, ar_hist) in zip(axs.flatten(), self.hist.items()):
+        fig, axs = plt.subplots(1 + len(self.hist))
+
+        hist = {'input': input_ar, **self.hist}
+        for ax, (hist_name, ar_hist) in zip(axs.flatten(), hist.items()):
             ax.set_title(hist_name)
             ax.axis('off')
-            im = make_hist_grid(
-                ar_hist[:n_samples],
-                nrows,
-                normalize=True if hist_name == 'classifier' else False
-            )
+            im = make_hist_grid(ar_hist[:n_samples])
             ax.imshow(im)
             fig.tight_layout()
