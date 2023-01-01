@@ -5,7 +5,6 @@ import torch
 from matplotlib import pyplot as plt
 from torch import nn
 from torchvision.transforms import Resize, InterpolationMode
-from torchvision.utils import make_grid
 
 
 @dataclass
@@ -30,6 +29,12 @@ class ModelHook:
         """
 
         def hook(model, input, output):
+            if type(output) == tuple:
+                if self.hist.get(key, None) is None:
+                    self.hist[key] = []
+                self.hist[key].append([o.detach() for o in output])
+                return
+
             self.hist[key] = output.detach()
 
         self.hooks.append(self.net.get_submodule(key).register_forward_hook(hook))
@@ -44,7 +49,7 @@ class ModelHook:
              input_ar: torch.Tensor,
              quantile_clamp: float = 0.85,
              resize: Tuple[int, int] = (50, 500),
-             n_samples: int = 25):
+             n_samples: int = 25, nrows=8):
         """ Plots the hist
 
         Args:
@@ -68,7 +73,8 @@ class ModelHook:
               on the 2nd axes to mimic a grayscale channel.
             """
             x = clamp(x)
-            return rs(make_grid(x.unsqueeze(1), normalize=True)).permute(1, 2, 0)
+            x = (x - x.min()) / (x.max() - x.min())
+            return rs(x).permute(1, 2, 0)
 
         fig, axs = plt.subplots(1 + len(self.hist))
 
