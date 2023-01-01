@@ -17,27 +17,40 @@ class MxSNN(MxCommon, ABC):
             **kwargs
     ):
         super().__init__(*args, **kwargs)
+
         self.n_steps = n_steps
         self.lif_beta = lif_beta
+
         self.example_input_array = torch.rand([2, 32, 1, 4000])
 
     def forward(self, xt):
         """ We should expect a T x B x t input"""
 
-        mems = [blk.init_leaky() for blk in self.conv_blks.children()]
+        mems = {k: blk.init_leaky() for k, blk in self.conv_blks.named_children()}
 
         hist_y = []
-        hist_spks = []
-        hist_mems = []
 
+        # Spikes of the intermediate layers
+        # E.g. hist_spks['conv_blk1'][2] <- 3rd Time Step
+        hist_spks = {k: [] for k, _ in self.conv_blks.named_children()}
+
+        # Membrane of the intermediate layers
+        hist_mems = {k: [] for k, _ in self.conv_blks.named_children()}
+
+        # For each time step
         for step in range(self.n_steps):
             x = xt[step]
 
-            for e, (mem, blk) in enumerate(zip(mems, self.conv_blks.children())):
-                x, mem = blk(x, mem)
-                hist_mems.append(mem.detach())
-                hist_spks.append(x.detach())
-                mems[e] = mem
+            for blk_name, blk in self.conv_blks.named_children():
+                # blk_name: str. E.g. 'conv_blk1'
+                x, mem = blk(x, mems[blk_name])
+
+                # Append the spike and membrane history.
+                hist_spks[blk_name].append(x.detach())
+                hist_mems[blk_name].append(mem.detach())
+
+                # Update the membrane potential.
+                mems[blk_name] = mem
 
             x = self.avg_pool(x)
             y = self.classifier(x.permute(0, 2, 1))
