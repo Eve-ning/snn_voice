@@ -5,6 +5,7 @@ import torch
 from sklearn.preprocessing import LabelEncoder
 from torch import nn
 from torch.utils.data import DataLoader
+from torchaudio import load
 from torchaudio.datasets import SPEECHCOMMANDS
 from torchaudio.transforms import Resample
 
@@ -91,3 +92,38 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
     def predict_dataloader(self):
         return DataLoader(self.val, batch_size=self.batch_size,
                           collate_fn=self.collate_fn_factory())
+
+    def load_samples(self, subset: str = "validation"):
+        """ Loads a single sample for each class from the dataset
+
+        Args:
+            subset: The subset string, can be "validation", "testing"
+
+        Returns:
+            A dictionary of key: utterance label and torch.Tensor
+        """
+
+        def load_and_pad(path: Path):
+            ar = load(path)[0].unsqueeze(0)
+
+            if ar.shape[-1] != SPEECHCOMMAND_SR:
+                # Pad those samples that are smaller than SAMPLE_RATE for some reason
+                short = SPEECHCOMMAND_SR - ar.shape[-1]
+                ar = nn.functional.pad(ar, (short // 2, short - short // 2))
+
+            return self.downsample(ar)
+
+        speech_commands_path = Path(f"{DATA_DIR.as_posix()}/SpeechCommands/speech_commands_v0.02/")
+        list_path = speech_commands_path / f"{subset}_list.txt"
+        samples = {}
+
+        with open(list_path, "r") as f:
+            sample_paths = {}
+            while line := f.readline():
+                if line:
+                    sample_paths[line.split("/")[0]] = line.split("/")[1].strip()
+
+            for sample_name, sample_fn in sample_paths.items():
+                samples[sample_name] = load_and_pad(speech_commands_path / sample_name / sample_fn)
+
+        return samples
