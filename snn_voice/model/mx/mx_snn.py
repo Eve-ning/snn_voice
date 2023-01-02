@@ -23,8 +23,11 @@ class MxSNN(MxCommon, ABC):
 
         self.example_input_array = torch.rand([2, 32, 1, 4000])
 
-    def forward(self, xt):
+    def forward(self, x):
         """ We should expect a T x B x t input"""
+
+        # xt: Time Step, Batch Size, 1, Sample Rate
+        xt = self.time_step_replica(x)
 
         mems = {k: blk.init_leaky() for k, blk in self.conv_blks.named_children()}
 
@@ -60,15 +63,15 @@ class MxSNN(MxCommon, ABC):
         yt = torch.stack(hist_y, dim=0)
         return yt, hist_mems, hist_spks
 
+    def time_step_replica(self, x) -> torch.Tensor:
+        return x.repeat(self.n_steps, 1, 1, 1)
+
     def step(self, batch):
         # x: Batch Size, 1, Sample Rate
         x, y_true = batch
 
-        # xt: Time Step, Batch Size, 1, Sample Rate
-        xt = x.repeat(self.n_steps, 1, 1, 1)
-
         # yt: Time Step, Batch Size, 1, Classes
-        yt, _, _ = self(xt)
+        yt, _, _ = self(x)
 
         # Sum it on the time step axes & squeeze
         # y: Batch Size, Classes
