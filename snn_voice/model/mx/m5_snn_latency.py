@@ -6,7 +6,7 @@ from snn_voice.model.mx.mx_snn_block import MxSNNBlock
 from snn_voice.model.mx.mx_snn_latency import MxSNNLatency
 
 
-class M5LRSAFS(MxSNNLatency):
+class M5SNNLatency(MxSNNLatency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
