@@ -28,16 +28,14 @@ class PlotCNN:
 
     def plot(self,
              input_ar: torch.Tensor,
-             quantile_clamp: float = 0.85,
-             resize: Tuple[int, int] = (50, 500),
-             n_samples: int = 25):
+             contrast: float = 1.5,
+             resize: Tuple[int, int] = (50, 500)):
         """ Plots the hist
 
         Args:
             input_ar: Input Array to plot alongside the hist plot.
-            quantile_clamp: The quantile to clamp the values at.
-            resize: THe final size of each hist plot
-            n_samples: Limit the number of samples (from 1 batch) to plot
+            contrast: Naively multiplies the image and clamps to improve contrast
+            resize: The final size of each hist plot
         """
 
         input_ar = self.forward(input_ar)
@@ -45,7 +43,7 @@ class PlotCNN:
 
         def clamp(ar):
             ar = torch.abs(ar)
-            return torch.clamp(ar, 0, torch.quantile(ar, quantile_clamp))
+            return torch.clamp(ar * contrast, 0, 1)
 
         def make_hist_grid(x):
             """ Makes the grid image from PyTorch-like B x H x W tensors.
@@ -58,14 +56,14 @@ class PlotCNN:
             x = (x - x.min()) / (x.max() - x.min())
             return rs(x).permute(1, 2, 0)
 
-        fig, axs = plt.subplots(1 + len(self.hist), )
+        fig, axs = plt.subplots(1 + len(self.hist))
 
         hist = {'input': input_ar, **self.hist}
         for ax, (hist_name, ar_hist) in zip(axs.flatten(), hist.items()):
             ax.set_title(hist_name)
             ax.axis('off')
-            im = make_hist_grid(ar_hist[:n_samples])
-            ax.imshow(im)
+            im = make_hist_grid(ar_hist)
+            ax.imshow(im, cmap='gray')
             fig.tight_layout()
 
         self.hist = {}
