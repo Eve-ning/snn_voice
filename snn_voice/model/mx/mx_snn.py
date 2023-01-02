@@ -28,13 +28,6 @@ class MxSNN(MxCommon, ABC):
 
         hist_y = []
 
-        # Spikes of the intermediate layers
-        # E.g. hist_spks['conv_blk1'][2] <- 3rd Time Step
-        hist_spks = {k: [] for k, _ in self.conv_blks.named_children()}
-
-        # Membrane of the intermediate layers
-        hist_mems = {k: [] for k, _ in self.conv_blks.named_children()}
-
         # For each time step
         for step in range(self.n_steps):
             x = xt[step]
@@ -42,10 +35,6 @@ class MxSNN(MxCommon, ABC):
             for blk_name, blk in self.conv_blks.named_children():
                 # blk_name: str. E.g. 'conv_blk1'
                 x, mem = blk(x, mems[blk_name])
-
-                # Append the spike and membrane history.
-                hist_spks[blk_name].append(x.detach())
-                hist_mems[blk_name].append(mem.detach())
 
                 # Update the membrane potential.
                 mems[blk_name] = mem
@@ -56,7 +45,7 @@ class MxSNN(MxCommon, ABC):
             hist_y.append(y)
 
         yt = torch.stack(hist_y, dim=0)
-        return yt, hist_mems, hist_spks
+        return yt
 
     @abstractmethod
     def time_step_replica(self, x) -> torch.Tensor:
@@ -67,7 +56,7 @@ class MxSNN(MxCommon, ABC):
         x, y_true = batch
 
         # yt: Time Step, Batch Size, 1, Classes
-        yt, _, _ = self(x)
+        yt = self(x)
 
         # Sum it on the time step axes & squeeze
         # y: Batch Size, Classes
