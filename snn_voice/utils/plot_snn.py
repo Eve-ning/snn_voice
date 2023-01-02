@@ -1,12 +1,14 @@
 from dataclasses import dataclass
 
-import torch
+from torchvision.utils import make_grid
 
 from snn_voice.utils.plot_cnn import PlotCNN
 
 
 @dataclass
 class PlotSNN(PlotCNN):
+    padding_f: float = 0.1
+
     def _add_hook(self, key):
         """ Adds a post-forward hook to the model.
         Returns the hook for removal in the future.
@@ -38,8 +40,9 @@ class PlotSNN(PlotCNN):
 
         for k in list(self.hist.keys()):
             v = self.hist.pop(k)
-            self.hist[f"{k}.spk"] = torch.concat([h[0] for h in v], dim=-2)
-            self.hist[f"{k}.mem"] = torch.concat([h[1] for h in v], dim=-2)
+            padding = int(v[0][0].shape[1] * self.padding_f)
+            self.hist[f"{k}_spk"] = make_grid([h[0] for h in v], nrow=1, padding=padding)[:1]
+            self.hist[f"{k}_mem"] = make_grid([h[1] for h in v], nrow=1, padding=padding)[:1]
 
         self._remove_hooks(hooks)
 
