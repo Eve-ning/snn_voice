@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 import torch
 
-from snn_voice.utils.model_hook import ModelHook
+from snn_voice.utils.plot_cnn import PlotCNN
 
 
 @dataclass
-class ModelSNNHook(ModelHook):
+class PlotSNN(PlotCNN):
     def _add_hook(self, key):
         """ Adds a post-forward hook to the model.
         Returns the hook for removal in the future.

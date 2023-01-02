@@ -8,7 +8,7 @@ from torchvision.transforms import Resize, InterpolationMode
 
 
 @dataclass
-class ModelHook:
+class PlotCNN:
     net: nn.Module
     hooks: list = field(default_factory=lambda: [
         "conv_blks.conv_blk1",
