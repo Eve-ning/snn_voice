@@ -18,8 +18,6 @@ class MxSNN(MxCommon, ABC):
         self.n_steps = n_steps
         self.lif_beta = lif_beta
 
-        self.example_input_array = torch.rand([2, 32, 1, 4000])
-
     def forward(self, x):
         """ We should expect a T x B x t input"""
 
