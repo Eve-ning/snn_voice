@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 
 import torch
 
@@ -63,8 +63,9 @@ class MxSNN(MxCommon, ABC):
         yt = torch.stack(hist_y, dim=0)
         return yt, hist_mems, hist_spks
 
+    @abstractmethod
     def time_step_replica(self, x) -> torch.Tensor:
-        return x.repeat(self.n_steps, 1, 1, 1)
+        ...
 
     def step(self, batch):
         # x: Batch Size, 1, Sample Rate
