@@ -6,9 +6,6 @@ from snn_voice.model.mx.mx_common import MxCommon
 
 
 class MxSNN(MxCommon, ABC):
-    n_steps: int = 2
-    lif_beta: float = 0.2
-
     def __init__(
             self,
             n_steps: int = 2,
