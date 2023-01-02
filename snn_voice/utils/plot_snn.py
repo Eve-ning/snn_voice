@@ -32,11 +32,11 @@ class PlotSNN(PlotCNN):
 
         return self.net.get_submodule(key).register_forward_hook(hook)
 
-    def forward(self, input_ar):
+    def forward(self, x):
         self.hist = {}
 
         hooks = self._add_hooks()
-        self.net(input_ar)
+        self.net(x)
 
         for k in list(self.hist.keys()):
             v = self.hist.pop(k)
@@ -46,4 +46,4 @@ class PlotSNN(PlotCNN):
 
         self._remove_hooks(hooks)
 
-        return input_ar[:, 0].permute(1, 0, 2)
+        return self.net.time_step_replica(x)[:, 0].permute(1, 0, 2)
