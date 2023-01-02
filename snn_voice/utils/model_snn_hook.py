@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from typing import Tuple
 
 import torch
 
@@ -8,7 +7,7 @@ from snn_voice.utils.model_hook import ModelHook
 
 @dataclass
 class ModelSNNHook(ModelHook):
-    def add_hook(self, key):
+    def _add_hook(self, key):
         """ Adds a post-forward hook to the model.
         Returns the hook for removal in the future.
 
@@ -29,16 +28,19 @@ class ModelSNNHook(ModelHook):
             self.hist[key].append([o.detach() for o in output])
             return
 
-        self.hooks.append(self.net.get_submodule(key).register_forward_hook(hook))
+        return self.net.get_submodule(key).register_forward_hook(hook)
 
-    def plot(self,
-             input_ar: torch.Tensor,
-             quantile_clamp: float = 0.85,
-             resize: Tuple[int, int] = (50, 500),
-             n_samples: int = 25, nrows=8):
+    def forward(self, input_ar):
+        self.hist = {}
+
+        hooks = self._add_hooks()
+        self.net(input_ar)
+
         for k in list(self.hist.keys()):
             v = self.hist.pop(k)
             self.hist[f"{k}.spk"] = torch.concat([h[0] for h in v], dim=-2)
             self.hist[f"{k}.mem"] = torch.concat([h[1] for h in v], dim=-2)
 
-        super().plot(input_ar, quantile_clamp, resize, n_samples, nrows)
+        self._remove_hooks(hooks)
+
+        return input_ar[:, 0].permute(1, 0, 2)
