@@ -1,6 +1,7 @@
 from abc import ABC
 from collections import OrderedDict
 
+import torch
 from torch import nn
 
 from snn_voice.model.module.module_cnn import ModuleCNN
@@ -9,16 +10,8 @@ from snn_voice.model.piczak.piczak_cnn_block import PiczakCNNBlock
 
 class PiczakCNN(ModuleCNN, ABC):
 
-    def __init__(self, sr: int, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # # We'll figure out the FFT window needed to satisfy the minimum window ms
-        # n_fft = int(MIN_WINDOW_MS / (1 / sr * 1000))
-        #
-        # self.mel_spec = MelSpectrogram(
-        #     n_mels=60,
-        #     n_fft=n_fft
-        # )
 
         self.conv_blks = nn.Sequential(
             OrderedDict([
@@ -35,14 +28,11 @@ class PiczakCNN(ModuleCNN, ABC):
         )
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
+        self.example_input_array = torch.rand([32, 1, 60, 101])
+
     def forward(self, x):
         x = self.conv_blks(x)
         x = self.avg_pool(x).squeeze()
         x = self.classifier(x)
 
         return x
-
-
-# %%
-net = PiczakCNN(4000)
-net(net.example_input_array).shape
