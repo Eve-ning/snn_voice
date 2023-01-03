@@ -1,6 +1,6 @@
+import snntorch as snn
 import torch
 from torch import nn
-import snntorch as snn
 
 
 class PiczakSNNBlock(nn.Module):
