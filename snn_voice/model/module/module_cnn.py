@@ -9,7 +9,7 @@ class ModuleCNN(Module, ABC):
     def forward(self, x):
         x = self.conv_blks(x)
         x = self.avg_pool(x).permute(0, 2, 1)
-        x = self.classifier(x)
+        return self.classifier(x)
 
     def step(self, batch):
         x, y_true = batch
