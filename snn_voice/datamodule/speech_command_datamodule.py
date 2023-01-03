@@ -1,4 +1,7 @@
+from __future__ import annotations
+
 from pathlib import Path
+from typing import Tuple
 
 import pytorch_lightning as pl
 import torch
@@ -7,9 +10,9 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torchaudio import load
 from torchaudio.datasets import SPEECHCOMMANDS
-from torchaudio.transforms import Resample
+from torchaudio.transforms import Resample, MelSpectrogram
 
-from snn_voice.settings import DATA_DIR, SPEECHCOMMAND_SR
+from snn_voice.settings import DATA_DIR, SPEECHCOMMAND_SR, MIN_WINDOW_MS
 
 
 class SpeechCommandsDataModule(pl.LightningDataModule):
@@ -17,16 +20,39 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
             self,
             data_dir: Path = DATA_DIR,
             batch_size: int = 16,
-            downsample: int = 4000
+            downsample: Tuple = (SPEECHCOMMAND_SR, 4000),
+            n_mels: int | None = 60,
     ):
         """ Creates a DataModule to be used for fitting models through
-        PyTorchLightning """
+        PyTorchLightning
+
+        Notes:
+            With Mel Spectrogram:
+                [Batch Size, 1, Mel Bands, Time Bands]
+            Without Mel Spectrogram:
+                [Batch Size, 1, Time]
+
+            The size of the Spectrogram FFT is automatically inferred from the minimum window size (MIN_WINDOW_MS).
+
+        Args:
+            data_dir: Data Directory to download speech command data.
+            batch_size: Batch size for all DataLoaders
+            downsample: Downsample Resampling Rate.
+            n_mels: Number of Mel Bands. If None, then Spectrogram transformation will be skipped.
+
+        """
+
         super().__init__()
         data_dir.mkdir(parents=True, exist_ok=True)
         self.data_dir = data_dir
         self.batch_size = batch_size
         self.le = LabelEncoder()
-        self.downsample = Resample(SPEECHCOMMAND_SR, downsample)
+        self.downsample = Resample(*downsample)
+
+        n_fft = int(MIN_WINDOW_MS / (1 / downsample[1] * 1000))
+
+        # We'll figure out the FFT window needed to satisfy the minimum window ms
+        self.mel_spec = MelSpectrogram(n_mels=n_mels, n_fft=n_fft) if n_mels else n_mels
         self.prepare_data()
         self.setup()
 
@@ -67,6 +93,8 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
             ar = nn.utils.rnn.pad_sequence(ars, batch_first=True).unsqueeze(1)
             ar = self.downsample(ar)
+            if self.mel_spec is not None:
+                ar = self.mel_spec(ar)
             return (
                 ar,  # ar: B x 1 x T
                 lab_ixs,  # lab: 0, 1, ... , 34
