@@ -1,15 +1,14 @@
 from abc import ABC
 
 import torch
-from snntorch.spikegen import latency
+from snntorch.spikegen import rate
 
 from snn_voice.model.module.module_snn import ModuleSNN
 
 
-class MxSNNLatency(ModuleSNN, ABC):
+class ModuleSNNRate(ModuleSNN, ABC):
 
     def time_step_replica(self, x) -> torch.Tensor:
         x = x[:, 0].abs()
         x = (x - x.min()) / (x.max() - x.min())
-        return latency(x, num_steps=self.n_steps, clip=True,
-                       threshold=0.01, normalize=True).unsqueeze(2)
+        return rate(x, num_steps=self.n_steps).unsqueeze(2)
