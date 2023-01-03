@@ -5,12 +5,12 @@ import snntorch as snn
 
 class PiczakSNNBlock(nn.Module):
     def __init__(self, in_chn, out_chn, ksize, step, max_pool_ksize, max_pool_step,
-                 lif_beta: float, dropout=None):
+                 lif_beta: float, dropout=0.5):
         super().__init__()
 
         self.conv = nn.Conv2d(in_chn, out_chn, ksize, step)
         self.max_pool = nn.MaxPool2d(max_pool_ksize, max_pool_step)
-        self.dropout = nn.Dropout(dropout) if dropout else dropout
+        self.dropout = nn.Dropout(dropout)
         self.lif = snn.Leaky(beta=lif_beta)
 
     def init_leaky(self) -> torch.Tensor:
