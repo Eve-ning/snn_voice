@@ -1,13 +1,12 @@
 from collections import OrderedDict
-from dataclasses import dataclass
-import torch
+
 import torch.nn as nn
 
-from snn_voice.model.mx.mx_cnn import MxCNN
+from snn_voice.model.module.module_cnn import ModuleCNN
 from snn_voice.model.mx.mx_cnn_block import MxCNNBlock
 
 
-class M5CNN(MxCNN, nn.Module):
+class M5CNN(ModuleCNN, nn.Module):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
