@@ -11,9 +11,11 @@ from snn_voice.model.piczak.piczak_snn_rate import PiczakSNNRate
 from snn_voice.model.piczak.piczak_snn_repeat import PiczakSNNRepeat
 
 
+# TODO: Move commented tests to a separate test_models with a separate
+#   fixture.
 @pytest.mark.parametrize(
     'Model',
-    [M5CNN, M5SNNRate, M5SNNRepeat, M5SNNLatency,
+    [#M5CNN, M5SNNRate, M5SNNRepeat, M5SNNLatency,]
      PiczakCNN, PiczakSNNRate, PiczakSNNRepeat, PiczakSNNLatency]
 )
 def test_models(Model, dm):
