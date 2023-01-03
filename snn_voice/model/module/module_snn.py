@@ -43,7 +43,13 @@ class ModuleSNN(Module, ABC):
                 # Update the membrane potential.
                 mems[blk_name] = mem
 
-            hist_y.append(self.classifier(self.avg_pool(x).permute(0, 2, 1)))
+            # TODO: Verify if unsqueeze is needed
+            #   After Avg Pool
+            #   Spect   : BS, FT, 1, 1
+            #   No Spect: BS, FT, 1
+            #   Squeeze + Unsqueeze: BS, 1, FT
+            #   Is BS, FT sufficient? Looks to be more intuitive
+            hist_y.append(self.classifier(self.avg_pool(x).squeeze().unsqueeze(1)))
 
         return torch.stack(hist_y, dim=0)
 
