@@ -3,15 +3,14 @@ from typing import Tuple
 
 import pytorch_lightning as pl
 import torch
-from sklearn.preprocessing import LabelEncoder
 from torch import nn
-from torch.optim.lr_scheduler import StepLR, CosineAnnealingLR, OneCycleLR
+from torch.optim.lr_scheduler import OneCycleLR
 
 from snn_voice.settings import SPEECHCOMMAND_CLASSES, TOPK, LEARNING_RATE
 
 
-class MxCommon(pl.LightningModule, ABC):
-    """ Defines an abstract class that all M Models can inherit from """
+class Module(pl.LightningModule, ABC):
+    """ Defines an abstract class that all Models can inherit from """
 
     def __init__(
             self,
@@ -28,9 +27,6 @@ class MxCommon(pl.LightningModule, ABC):
         self.criterion = nn.CrossEntropyLoss()
         # We'll set a static example, exposing the correct sizes is too much of a workaround
         self.example_input_array = torch.rand([32, 1, 4000])
-
-        self.classifier = nn.Sequential()
-        self.conv_blks = nn.Sequential()
 
     def training_step(self, batch, batch_ix):
         x, y_pred_l, y_true = self.step(batch)

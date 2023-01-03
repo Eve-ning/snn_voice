@@ -1,11 +1,13 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod, ABC
 
 import torch
 
-from snn_voice.model.mx.mx_common import MxCommon
+from snn_voice.model.module import Module
 
 
-class MxSNN(MxCommon, ABC):
+class ModuleSNN(Module, ABC):
+    """ Defines the base SNN Module """
+
     def __init__(
             self,
             n_steps: int = 2,
@@ -18,9 +20,11 @@ class MxSNN(MxCommon, ABC):
         self.n_steps = n_steps
         self.lif_beta = lif_beta
 
-    def forward(self, x):
-        """ We should expect a T x B x t input"""
+    @abstractmethod
+    def time_step_replica(self, x) -> torch.Tensor:
+        ...
 
+    def forward(self, x):
         # xt: Time Step, Batch Size, 1, Sample Rate
         xt = self.time_step_replica(x)
 
@@ -39,17 +43,9 @@ class MxSNN(MxCommon, ABC):
                 # Update the membrane potential.
                 mems[blk_name] = mem
 
-            x = self.avg_pool(x)
-            y = self.classifier(x.permute(0, 2, 1))
+            hist_y.append(self.classifier(self.avg_pool(x).permute(0, 2, 1)))
 
-            hist_y.append(y)
-
-        yt = torch.stack(hist_y, dim=0)
-        return yt
-
-    @abstractmethod
-    def time_step_replica(self, x) -> torch.Tensor:
-        ...
+        return torch.stack(hist_y, dim=0)
 
     def step(self, batch):
         # x: Batch Size, 1, Sample Rate
