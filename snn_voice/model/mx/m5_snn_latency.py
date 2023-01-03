@@ -2,11 +2,11 @@ from collections import OrderedDict
 
 from torch import nn
 
+from snn_voice.model.module.module_snn_latency import ModuleSNNLatency
 from snn_voice.model.mx.mx_snn_block import MxSNNBlock
-from snn_voice.model.mx.mx_snn_latency import MxSNNLatency
 
 
-class M5SNNLatency(MxSNNLatency):
+class M5SNNLatency(ModuleSNNLatency):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

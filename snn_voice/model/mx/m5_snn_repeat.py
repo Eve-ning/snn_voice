@@ -2,11 +2,11 @@ from collections import OrderedDict
 
 from torch import nn
 
+from snn_voice.model.module.module_snn_repeat import ModuleSNNRepeat
 from snn_voice.model.mx.mx_snn_block import MxSNNBlock
-from snn_voice.model.mx.mx_snn_repeat import MxSNNRepeat
 
 
-class M5SNNRepeat(MxSNNRepeat):
+class M5SNNRepeat(ModuleSNNRepeat):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
