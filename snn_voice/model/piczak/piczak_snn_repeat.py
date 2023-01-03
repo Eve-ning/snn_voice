@@ -27,3 +27,10 @@ class PiczakSNNRepeat(ModuleSNNRepeat):
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
         self.example_input_array = torch.rand([32, 1, 60, 101])
+
+    def time_step_replica(self, x) -> torch.Tensor:
+        # TODO: Probably make this dynamically repeat somehow
+        #   The problem now is that the input has different ndims because of spectrogram
+        #   Thus, we need an override here with an additional 1
+        #   We may consider doing like (1,) * (x.ndim - 1) but seems to be overkill
+        return x.repeat(self.n_steps, 1, 1, 1, 1)
