@@ -11,12 +11,22 @@ from snn_voice.model.piczak.piczak_snn_rate import PiczakSNNRate
 from snn_voice.model.piczak.piczak_snn_repeat import PiczakSNNRepeat
 
 
-@pytest.mark.parametrize('Model', [PiczakCNN, PiczakSNNRate, PiczakSNNRepeat, PiczakSNNLatency])
+@pytest.mark.parametrize('Model', [
+    PiczakCNN,
+    PiczakSNNRate,
+    PiczakSNNRepeat,
+    PiczakSNNLatency
+])
 def test_spec_models(Model, dm_spec):
     run_experiment(Model, dm_spec)
 
 
-@pytest.mark.parametrize('Model', [M5CNN, M5SNNRate, M5SNNRepeat, M5SNNLatency])
+@pytest.mark.parametrize('Model', [
+    M5CNN,
+    M5SNNRate,
+    M5SNNRepeat,
+    M5SNNLatency
+])
 def test_models(Model, dm):
     run_experiment(Model, dm)
 
