@@ -83,20 +83,33 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         """ Creates the collate_fn using a factory
 
         Notes:
-          A factory is necessary to include the self.le via a non-arg
+            A factory is necessary to include the self.le via a non-arg
         """
 
         def collate_fn(x):
+            # E.g. i.shape = (1, 16000)
             ars = [i[0].squeeze() for i in x]
+
+            # E.g. labs = ['two', 'yes']
             labs = [i[2] for i in x]
             lab_ixs = torch.tensor(self.le.transform(labs), dtype=int)
 
+            # Some elements in ars may not be 16000, thus we need to pad it
+            # E.g. [(16000, ), (15800, ), (..., )]
+            #   -> Pad -> (Batch Size, 16000)
+            #   -> Unsqueeze for Channel -> (Batch Size, 1, 16000)
             ar = nn.utils.rnn.pad_sequence(ars, batch_first=True).unsqueeze(1)
+
+            # Downsample: (Batch Size, 1, 16000) -> (Batch Size, 1, 4000)
             ar = self.downsample(ar)
+
             if self.mel_spec is not None:
                 ar = self.mel_spec(ar)
+
+            # ar: (Batch Size, 1, Mel Bands, Time Bands)
+            #   : (Batch Size, 1, Time)
             return (
-                ar,  # ar: B x 1 x T
+                ar,  # ar: B x 1 x T or B x 1 x M x T
                 lab_ixs,  # lab: 0, 1, ... , 34
                 # [i[1] for i in x], # sr
                 # [i[3] for i in x], # uid
