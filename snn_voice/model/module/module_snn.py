@@ -25,7 +25,7 @@ class ModuleSNN(Module, ABC):
         ...
 
     def forward(self, x):
-        # xt: Time Step, Batch Size, 1, Sample Rate
+        # xt: Time Step, Batch Size, Channel = 1, Sample Rate
         xt = self.time_step_replica(x)
 
         mems = {k: blk.init_leaky() for k, blk in self.conv_blks.named_children()}
@@ -43,26 +43,24 @@ class ModuleSNN(Module, ABC):
                 # Update the membrane potential.
                 mems[blk_name] = mem
 
-            # TODO: Verify if unsqueeze is needed
-            #   After Avg Pool
-            #   Spect   : BS, FT, 1, 1
-            #   No Spect: BS, FT, 1
-            #   Squeeze + Unsqueeze: BS, 1, FT
-            #   Is BS, FT sufficient? Looks to be more intuitive
-            hist_y.append(self.classifier(self.avg_pool(x).squeeze().unsqueeze(1)))
+            # After Avg Pool
+            # Spect   : BS, FT, 1, 1
+            # No Spect: BS, FT, 1
+            # Squeeze + Unsqueeze: BS, 1, FT
+            hist_y.append(self.classifier(self.avg_pool(x).squeeze()))
 
         return torch.stack(hist_y, dim=0)
 
     def step(self, batch):
-        # x: Batch Size, 1, Sample Rate
+        # x: Batch Size, Channel = 1, Sample Rate
         x, y_true = batch
 
-        # yt: Time Step, Batch Size, 1, Classes
+        # yt: Time Step, Batch Size, Classes
         yt = self(x)
 
         # Sum it on the time step axes & squeeze
         # y: Batch Size, Classes
-        y_pred_l = yt.sum(dim=0).squeeze().to(float)
+        y_pred_l = yt.sum(dim=0).to(float)
 
         # Scale y to a proportion
         # We can consider moving the optimizer here
