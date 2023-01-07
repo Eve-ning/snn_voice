@@ -3,7 +3,7 @@ from abc import ABC
 import torch
 from snntorch.spikegen import latency
 
-from snn_voice.model.module.module_snn import ModuleSNN
+from snn_voice.model.module import ModuleSNN
 
 
 class ModuleSNNLatency(ModuleSNN, ABC):

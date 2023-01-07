@@ -1,14 +1,8 @@
 import pytest
 import pytorch_lightning as pl
 
-from snn_voice.model.mx.m5_cnn import M5CNN
-from snn_voice.model.mx.m5_snn_latency import M5SNNLatency
-from snn_voice.model.mx.m5_snn_rate import M5SNNRate
-from snn_voice.model.mx.m5_snn_repeat import M5SNNRepeat
-from snn_voice.model.piczak.piczak_cnn import PiczakCNN
-from snn_voice.model.piczak.piczak_snn_latency import PiczakSNNLatency
-from snn_voice.model.piczak.piczak_snn_rate import PiczakSNNRate
-from snn_voice.model.piczak.piczak_snn_repeat import PiczakSNNRepeat
+from snn_voice.model.mx.m5 import M5CNN, M5SNNLatency, M5SNNRate, M5SNNRepeat
+from snn_voice.model.piczak import PiczakCNN, PiczakSNNLatency, PiczakSNNRate, PiczakSNNRepeat
 
 
 @pytest.mark.parametrize('Model', [

@@ -1,5 +1,5 @@
-from snn_voice.model.module.module_snn_latency import ModuleSNNLatency
-from snn_voice.model.piczak.piczak_snn import piczak_snn_init
+from snn_voice.model.module import ModuleSNNLatency
+from snn_voice.model.piczak import piczak_snn_init
 
 
 class PiczakSNNLatency(ModuleSNNLatency):

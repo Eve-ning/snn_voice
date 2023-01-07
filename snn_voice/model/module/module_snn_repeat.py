@@ -2,7 +2,7 @@ from abc import ABC
 
 import torch
 
-from snn_voice.model.module.module_snn import ModuleSNN
+from snn_voice.model.module import ModuleSNN
 
 
 class ModuleSNNRepeat(ModuleSNN, ABC):
