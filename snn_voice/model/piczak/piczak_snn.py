@@ -7,6 +7,7 @@ from snn_voice.model.piczak.piczak_snn_block import PiczakSNNBlock
 
 
 def piczak_snn_init(self):
+    """ Initializes the Piczak __init__ blocks """
     self.conv_blks = nn.Sequential(
         OrderedDict([
             ('conv_blk1', PiczakSNNBlock(1, 80, (57, 6), (1, 1), (4, 3), (1, 3), self.lif_beta, 0.5)),

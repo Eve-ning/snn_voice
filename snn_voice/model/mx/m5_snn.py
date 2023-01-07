@@ -6,6 +6,7 @@ from snn_voice.model.mx.mx_snn_block import MxSNNBlock
 
 
 def m5_snn_init(self):
+    """ Initializes the M5 __init__ blocks """
     self.conv_blks = nn.Sequential(
         OrderedDict([
             ('conv_blk1', MxSNNBlock(1, 128, 80, self.lif_beta, 4)),
