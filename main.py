@@ -1,45 +1,31 @@
-# %%
-from pathlib import Path
+from matplotlib import pyplot as plt
 
-import matplotlib.pyplot as plt
-import numpy as np
-import torch
-from snntorch import spikegen
-from torchaudio import load
-from torchaudio.transforms import MelSpectrogram
+from snn_voice.datamodule.speech_command_datamodule import SpeechCommandsDataModule
+from snn_voice.model.mx.m5_cnn import M5CNN
+from snn_voice.model.mx.m5_trsafs import M5TRSAFS
+from snn_voice.utils.plot_cnn import PlotCNN
+from snn_voice.utils.plot_snn import PlotSNN
 
-from src.datamodule.sample_datamodule import SampleDataset
-
-ds = SampleDataset()
 # %%
 
-backward_path = Path("data/SpeechCommands/SpeechCommands/speech_commands_v0.02/backward/")
-backward_fp_iter = backward_path.glob("*.wav")
-
-fig, axs = plt.subplots(5, 1)
-for ax in axs.flatten():
-    ar, sr = load(next(backward_fp_iter).as_posix())
-
-    mel_spectrogram = MelSpectrogram(
-        sample_rate=sr,
-        n_fft=500,
-        center=True,
-        pad_mode="reflect",
-        power=2.0,
-        normalized=True,
-        norm="slaney",
-        n_mels=16,
-        mel_scale="htk",
-    )
-    ar_spec = mel_spectrogram(ar)
-    ar_spec_log = torch.log(ar_spec)
-    ar_spec_log = (ar_spec_log - ar_spec_log.min()) / (ar_spec_log.max() - ar_spec_log.min())
-
-    ar_spike = spikegen.delta(ar_spec_log[0], threshold=0.01, padding=True)
-
-    ax.imshow(ar_spike)
+dm = SpeechCommandsDataModule(batch_size=16)
+dm.prepare_data()
+dm.setup()
+val_samples = dm.load_samples('validation')
+sample = val_samples['backward']
+# %%
+model_cnn = M5CNN()
+h_cnn = PlotCNN(model_cnn, )
+h_cnn.plot(sample)
 plt.show()
-# spikegen.latency(a, num_steps=3, normalize=True, linear=True)
 # %%
-plt.imshow(np.log(ar_spec[0]))
+model_snn = M5TRSAFS(n_steps=15)
+# %%
+h_snn = PlotSNN(model_snn, padding_f=0.5)
+h_snn.plot(sample.repeat(15, 1, 1, 1), contrast=2,
+           resize=(50 * 15, 500))
+plt.gcf().set_figheight(13 * 4)
+plt.gcf().set_figwidth(5)
+plt.tight_layout()
 plt.show()
+# %%
