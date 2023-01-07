@@ -1,3 +1,4 @@
+# TODO: Migrate HJ's Model
 from typing import Tuple
 
 import snntorch as snn

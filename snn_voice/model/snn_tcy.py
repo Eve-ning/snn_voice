@@ -1,3 +1,4 @@
+# TODO: Migrate TCY's Model
 from typing import Tuple
 
 import snntorch as snn
