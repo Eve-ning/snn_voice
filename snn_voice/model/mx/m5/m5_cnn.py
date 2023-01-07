@@ -3,7 +3,7 @@ from collections import OrderedDict
 from torch import nn
 
 from snn_voice.model.module import ModuleCNN
-from snn_voice.model.mx import MxCNNBlock
+from snn_voice.model.mx.blocks import MxCNNBlock
 
 
 class M5CNN(ModuleCNN, nn.Module):

@@ -2,7 +2,7 @@ from collections import OrderedDict
 
 from torch import nn
 
-from snn_voice.model.mx import MxSNNBlock
+from snn_voice.model.mx.blocks import MxSNNBlock
 
 
 def m5_snn_init(self):

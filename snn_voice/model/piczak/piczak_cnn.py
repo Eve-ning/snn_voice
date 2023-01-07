@@ -5,7 +5,7 @@ import torch
 from torch import nn
 
 from snn_voice.model.module import ModuleCNN
-from snn_voice.model.piczak import PiczakCNNBlock
+from snn_voice.model.piczak.blocks import PiczakCNNBlock
 
 
 class PiczakCNN(ModuleCNN, ABC):

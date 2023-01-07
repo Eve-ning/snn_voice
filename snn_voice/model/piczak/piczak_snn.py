@@ -3,7 +3,7 @@ from collections import OrderedDict
 import torch
 from torch import nn
 
-from snn_voice.model.piczak import PiczakSNNBlock
+from snn_voice.model.piczak.blocks import PiczakSNNBlock
 
 
 def piczak_snn_init(self):

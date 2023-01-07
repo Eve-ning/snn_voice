@@ -1,5 +1,5 @@
 from snn_voice.model.module import ModuleSNNRate
-from snn_voice.model.mx import m5_snn_init
+from snn_voice.model.mx.m5 import m5_snn_init
 
 
 class M5SNNRate(ModuleSNNRate):
