@@ -1,9 +1,9 @@
 from collections import OrderedDict
 
-import torch.nn as nn
+from torch import nn
 
-from snn_voice.model.module.module_cnn import ModuleCNN
-from snn_voice.model.mx.mx_cnn_block import MxCNNBlock
+from snn_voice.model.module import ModuleCNN
+from snn_voice.model.mx import MxCNNBlock
 
 
 class M5CNN(ModuleCNN, nn.Module):

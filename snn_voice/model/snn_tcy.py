@@ -3,7 +3,7 @@ from typing import Tuple
 
 import snntorch as snn
 import torch
-import torch.nn as nn
+from torch import nn
 from torchaudio.transforms import Resample
 
 from snn_voice.settings import EPSILON

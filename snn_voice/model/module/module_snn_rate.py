@@ -3,7 +3,7 @@ from abc import ABC
 import torch
 from snntorch.spikegen import rate
 
-from snn_voice.model.module.module_snn import ModuleSNN
+from snn_voice.model.module import ModuleSNN
 
 
 class ModuleSNNRate(ModuleSNN, ABC):
