@@ -18,6 +18,14 @@ class Module(pl.LightningModule, ABC):
             topk: Tuple[int] = TOPK,
             n_classes: int = len(SPEECHCOMMAND_CLASSES)
     ):
+        """ Initializes an abstract datamodule for inheritance
+
+        Args:
+            lr: Learning Rate
+            topk: A Tuple of top-k accuracies to track
+            n_classes: Number of output classes. E.g. SpeechCommands will have 35
+        """
+
         super().__init__()
         self.lr = lr
         self.topk = topk
@@ -29,6 +37,15 @@ class Module(pl.LightningModule, ABC):
         self.example_input_array = torch.rand([32, 1, 4000])
 
     def training_step(self, batch, batch_ix):
+        """ A single step for training
+
+        Args:
+            batch: (x, y_pred_l (continuous), y_true (label))
+            batch_ix: Batch Index
+
+        Returns:
+            The loss based on criterion
+        """
         x, y_pred_l, y_true = self.step(batch)
         loss = self.criterion(y_pred_l, y_true)
 
@@ -38,6 +55,11 @@ class Module(pl.LightningModule, ABC):
         return loss
 
     def validation_step(self, batch, batch_ix):
+        """ A single step for validation
+
+        Notes:
+            See self.training_step()
+        """
         x, y_pred_l, y_true = self.step(batch)
         loss = self.criterion(y_pred_l, y_true)
 
@@ -81,9 +103,13 @@ class Module(pl.LightningModule, ABC):
             lr=self.lr,
             weight_decay=0.0001
         )
+
+        # Retrieves the appropriate steps_per_peoch for LR Scheduler in next line
         steps_per_epoch = self.trainer.limit_train_batches \
             if self.trainer.limit_train_batches > 1.0 \
             else len(self.trainer.datamodule.train_dataloader())
+
+        # LR Scheduler through Cosine Annealing
         lr_scheduler = OneCycleLR(
             optimizer,
             max_lr=self.lr,
@@ -102,8 +128,21 @@ class Module(pl.LightningModule, ABC):
 
     @abstractmethod
     def forward(self, x):
+        """ Forward-prop of x, yielding y_pred """
         ...
 
     @abstractmethod
     def step(self, batch):
+        """ A step, yielding the x, y_pred_l (continuous), and the y_true.
+        To be fed into CrossEntropyLoss()(input=y_pred_l, target=y_true)
+
+        Notes:
+            Thus, y_pred_l must be continuous logits of shape (BS, C), then y_true is the indices of the true label.
+            For example,
+                y_pred_l = [[-0.1, 0.0, 0.1], [0.1, 0.0, -0.1]] (BS=2 ,C=3)
+                y_true = [2, 1] (BS=2) in [0, 3)
+                of batch size = 2.
+
+            Will find the 1st element of the mini-batch correct, and the 2nd wrong
+        """
         ...
