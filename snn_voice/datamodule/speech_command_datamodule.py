@@ -134,6 +134,10 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         return DataLoader(self.val, batch_size=self.batch_size,
                           collate_fn=self.collate_fn_factory())
 
+    @property
+    def speech_commands_path(self):
+        return Path(self.data_dir / f"/SpeechCommands/speech_commands_v0.02/")
+
     def load_samples(self, subset: str = "validation"):
         """ Loads a single sample for each class from the dataset
 
@@ -144,11 +148,10 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
             A dictionary of key: utterance label and torch.Tensor
         """
 
-        speech_commands_path = Path(f"{DATA_DIR.as_posix()}/SpeechCommands/speech_commands_v0.02/")
-        list_path = speech_commands_path / f"{subset}_list.txt"
+        subset_list_path = self.speech_commands_path / f"{subset}_list.txt"
         samples = {}
 
-        with open(list_path, "r") as f:
+        with open(subset_list_path, "r") as f:
             # Collect a unique path to sample for each class
             sample_paths = {}
 
@@ -158,7 +161,7 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
             ars = self.collate_fn_factory()(
                 # Loads each
-                [(*load(speech_commands_path / sample_name / sample_fn), sample_name)
+                [(*load(self.speech_commands_path / sample_name / sample_fn), sample_name)
                  for sample_name, sample_fn in sample_paths.items()]
             )
             for ar, sample_name in zip(ars, sample_paths.keys()):
