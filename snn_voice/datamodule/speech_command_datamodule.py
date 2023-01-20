@@ -136,7 +136,7 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
     @property
     def speech_commands_path(self):
-        return Path(self.data_dir / f"/SpeechCommands/speech_commands_v0.02/")
+        return Path(self.data_dir / f"SpeechCommands/speech_commands_v0.02/")
 
     def load_samples(self, subset: str = "validation"):
         """ Loads a single sample for each class from the dataset
