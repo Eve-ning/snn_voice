@@ -61,6 +61,8 @@ class PlotCNN:
         for ax, (hist_name, ar_hist) in zip(axs.flatten(), hist.items()):
             ax.set_title(hist_name)
             ax.axis('off')
+
+            ar_hist = ar_hist.squeeze().unsqueeze(0)
             im = make_hist_grid(ar_hist)
             ax.imshow(im, cmap='gray')
             fig.tight_layout()
