@@ -163,8 +163,8 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
                 # Loads each
                 [(*load(self.speech_commands_path / sample_name / sample_fn), sample_name)
                  for sample_name, sample_fn in sample_paths.items()]
-            )
+            )[0]
             for ar, sample_name in zip(ars, sample_paths.keys()):
-                samples[sample_name] = ar
+                samples[sample_name] = ar.unsqueeze(0)
 
         return samples
