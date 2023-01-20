@@ -24,7 +24,6 @@ class PlotCNN:
         hooks = self._add_hooks()
         self.net(input_ar)
         self._remove_hooks(hooks)
-        return input_ar
 
     def plot(self,
              input_ar: torch.Tensor,
@@ -38,7 +37,7 @@ class PlotCNN:
             resize: The final size of each hist plot
         """
 
-        input_ar = self.forward(input_ar)
+        self.forward(input_ar)
         rs = Resize(resize, interpolation=InterpolationMode.NEAREST)
 
         def clamp(ar):
