@@ -134,6 +134,10 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         return DataLoader(self.val, batch_size=self.batch_size,
                           collate_fn=self.collate_fn_factory())
 
+    @property
+    def speech_commands_path(self):
+        return Path(self.data_dir / f"SpeechCommands/speech_commands_v0.02/")
+
     def load_samples(self, subset: str = "validation"):
         """ Loads a single sample for each class from the dataset
 
@@ -144,27 +148,23 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
             A dictionary of key: utterance label and torch.Tensor
         """
 
-        def load_and_pad(path: Path):
-            ar = load(path)[0].unsqueeze(0)
-
-            if ar.shape[-1] != SPEECHCOMMAND_SR:
-                # Pad those samples that are smaller than SAMPLE_RATE for some reason
-                short = SPEECHCOMMAND_SR - ar.shape[-1]
-                ar = nn.functional.pad(ar, (short // 2, short - short // 2))
-
-            return self.downsample(ar)
-
-        speech_commands_path = Path(f"{DATA_DIR.as_posix()}/SpeechCommands/speech_commands_v0.02/")
-        list_path = speech_commands_path / f"{subset}_list.txt"
+        subset_list_path = self.speech_commands_path / f"{subset}_list.txt"
         samples = {}
 
-        with open(list_path, "r") as f:
+        with open(subset_list_path, "r") as f:
+            # Collect a unique path to sample for each class
             sample_paths = {}
+
             while line := f.readline():
                 if line:
                     sample_paths[line.split("/")[0]] = line.split("/")[1].strip()
 
-            for sample_name, sample_fn in sample_paths.items():
-                samples[sample_name] = load_and_pad(speech_commands_path / sample_name / sample_fn)
+            ars = self.collate_fn_factory()(
+                # Loads each
+                [(*load(self.speech_commands_path / sample_name / sample_fn), sample_name)
+                 for sample_name, sample_fn in sample_paths.items()]
+            )[0]
+            for ar, sample_name in zip(ars, sample_paths.keys()):
+                samples[sample_name] = ar.unsqueeze(0)
 
         return samples
