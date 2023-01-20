@@ -159,12 +159,19 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         samples = {}
 
         with open(list_path, "r") as f:
+            # Collect a unique path to sample for each class
             sample_paths = {}
+
             while line := f.readline():
                 if line:
                     sample_paths[line.split("/")[0]] = line.split("/")[1].strip()
 
-            for sample_name, sample_fn in sample_paths.items():
-                samples[sample_name] = load_and_pad(speech_commands_path / sample_name / sample_fn)
+            ars = self.collate_fn_factory()(
+                # Loads each
+                [(*load(speech_commands_path / sample_name / sample_fn), sample_name)
+                 for sample_name, sample_fn in sample_paths.items()]
+            )
+            for ar, sample_name in zip(ars, sample_paths.keys()):
+                samples[sample_name] = ar
 
         return samples
