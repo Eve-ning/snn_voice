@@ -144,16 +144,6 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
             A dictionary of key: utterance label and torch.Tensor
         """
 
-        def load_and_pad(path: Path):
-            ar = load(path)[0].unsqueeze(0)
-
-            if ar.shape[-1] != SPEECHCOMMAND_SR:
-                # Pad those samples that are smaller than SAMPLE_RATE for some reason
-                short = SPEECHCOMMAND_SR - ar.shape[-1]
-                ar = nn.functional.pad(ar, (short // 2, short - short // 2))
-
-            return self.downsample(ar)
-
         speech_commands_path = Path(f"{DATA_DIR.as_posix()}/SpeechCommands/speech_commands_v0.02/")
         list_path = speech_commands_path / f"{subset}_list.txt"
         samples = {}
