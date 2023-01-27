@@ -16,6 +16,7 @@ class PlotHist:
     im_width: int = 500
     im_padding: int = 3
     im_padding_value: int = 1
+    plot_mems: bool = True
 
     def __post_init__(self):
         self.hooks = [f'conv_blks.{x[0]}' for x in self.net.conv_blks.named_children()]
@@ -52,13 +53,13 @@ class PlotHist:
             if self.net_name.startswith("PiczakSNN"):
                 ar_spks = torch.stack([x[0] for x in ar])
                 ar_mems = torch.stack([x[1] for x in ar])
-                im_t = ar_mems[:, 0, :, 0, :]
+                im_t = (ar_mems if self.plot_mems else ar_spks)[:, 0, :, 0, :]
             elif self.net_name == "PiczakCNN":
                 im_t = ar[0, :, 0, :].unsqueeze(0)
             elif self.net_name.startswith("M5SNN"):
                 ar_spks = torch.stack([x[0] for x in ar])
                 ar_mems = torch.stack([x[1] for x in ar])
-                im_t = ar_mems[:, 0, :, :]
+                im_t = (ar_mems if self.plot_mems else ar_spks)[:, 0, :, :]
             elif self.net_name == "M5CNN":
                 im_t = ar[0, :, :].unsqueeze(0)
 
