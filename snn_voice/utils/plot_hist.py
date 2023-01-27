@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-from typing import Tuple
+from datetime import datetime
 
 import torch
 from matplotlib import pyplot as plt
@@ -91,6 +91,11 @@ class PlotHist:
             ax.imshow(im)
             ax.set_title(k)
             ax.axis('off')
+        fig.suptitle(
+            f"{self.net.__class__.__name__}'s "
+            f"{'Membrane' if self.plot_mems else 'Spike'} "
+            f"History. "
+            f"{datetime.now().isoformat()}")
         plt.tight_layout()
         plt.show()
 
