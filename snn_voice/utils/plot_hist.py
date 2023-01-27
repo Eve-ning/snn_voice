@@ -12,10 +12,10 @@ from torchvision.utils import make_grid
 class PlotHist:
     net: nn.Module
     hist: dict = field(init=False, default_factory=dict)
-    im_height = 250
-    im_width = 500
-    im_padding = 3
-    im_padding_value = 1
+    im_height: int = 250
+    im_width: int = 500
+    im_padding: int = 3
+    im_padding_value: int = 1
 
     def __post_init__(self):
         self.hooks = [f'conv_blks.{x[0]}' for x in self.net.conv_blks.named_children()]
