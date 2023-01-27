@@ -11,13 +11,13 @@ class PiczakSNNBlock(nn.Module):
         self.conv = nn.Conv2d(in_chn, out_chn, ksize, step)
         self.max_pool = nn.MaxPool2d(max_pool_ksize, max_pool_step)
         self.dropout = nn.Dropout(dropout)
-        self.lif = snn.Leaky(beta=lif_beta)
+        self.lif = snn.Leaky(beta=lif_beta, init_hidden=True)
 
     def init_leaky(self) -> torch.Tensor:
         """ Initializes the Leaky & Fire block """
         return self.lif.init_leaky()
 
-    def forward(self, x, mem):
+    def forward(self, x):
         """ Block Forward
 
         Args:
@@ -30,5 +30,5 @@ class PiczakSNNBlock(nn.Module):
         x = self.conv(x)
         x = self.max_pool(x)
         x = self.dropout(x)
-        x, mem = self.lif(x, mem)
-        return x, mem
+        x = self.lif(x)
+        return x
