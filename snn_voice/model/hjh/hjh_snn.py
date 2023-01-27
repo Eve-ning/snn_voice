@@ -10,6 +10,7 @@ def hjh_snn_init(self):
     """ Initializes the Hjh __init__ blocks """
     self.conv_blks = nn.Sequential(
         OrderedDict([
+            # TODO: Insert the Leaky here
             ('conv_blk1', HjhCNNBlock(1, 8, 5, 2)),
             ('conv_blk2', HjhCNNBlock(8, 16, 5)),
         ])
