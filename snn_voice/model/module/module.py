@@ -15,7 +15,6 @@ class Module(pl.LightningModule, ABC):
     def __init__(
             self,
             lr: float = LEARNING_RATE,
-            topk: Tuple[int] = TOPK,
             n_classes: int = len(SPEECHCOMMAND_CLASSES)
     ):
         """ Initializes an abstract datamodule for inheritance
@@ -28,7 +27,7 @@ class Module(pl.LightningModule, ABC):
 
         super().__init__()
         self.lr = lr
-        self.topk = topk
+        self.topk = TOPK
         self.n_classes = n_classes
 
         self.avg_pool = nn.AdaptiveAvgPool1d(1)
