@@ -29,17 +29,8 @@ class ModuleSNN(Module, ABC):
         # xt: Time Step, Batch Size, Channel = 1, Sample Rate
         xt = self.time_step_replica(x)
 
-        yt_list = []
-        # For each time step
-        for step in range(self.n_steps):
-            # Given that the 1st dim of xt is time step
-            # x: Batch Size, Channel = 1, Sample Rate
-            x_ = xt[step]
-            yt_list.append(self.net(x_))
-
-        # This will yield the time-step y
         # yt: Time Step, Batch Size, Channel = 1, Feature
-        yt = torch.stack(yt_list, dim=0)
+        yt = torch.stack([self.net(x_) for x_ in xt], dim=0)
         return yt
 
     def step(self, batch):
@@ -58,4 +49,3 @@ class ModuleSNN(Module, ABC):
         # See: https://snntorch.readthedocs.io/en/latest/snntorch.functional.html#snntorch.functional.loss.ce_count_loss
         # y_pred_l = y # / self.n_steps
         return x, y_pred_l, y_true
-
