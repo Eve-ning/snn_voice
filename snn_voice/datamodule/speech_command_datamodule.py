@@ -56,8 +56,6 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
         # We'll figure out the FFT window needed to satisfy the minimum window ms
         self.mel_spec = MelSpectrogram(n_mels=n_mels, n_fft=n_fft) if n_mels else n_mels
-        self.prepare_data()
-        self.setup()
 
     def prepare_data(self):
         """ Ran once to download all data necessary before data setup """
