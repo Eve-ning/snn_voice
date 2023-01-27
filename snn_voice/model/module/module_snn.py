@@ -30,7 +30,7 @@ class ModuleSNN(Module, ABC):
         xt = self.time_step_replica(x)
 
         # yt: Time Step, Batch Size, Channel = 1, Feature
-        yt = torch.stack([self.net(x_) for x_ in xt], dim=0)
+        yt = torch.stack([self(x_) for x_ in xt], dim=0)
         return yt
 
     def step(self, batch):
