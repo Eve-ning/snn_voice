@@ -84,7 +84,7 @@ class PlotHist:
             im = im.permute(1, 2, 0)
             ims[k] = im
 
-        fig, axs = plt.subplots(2, int(len(ims) / 2))
+        fig, axs = plt.subplots(2, int(len(ims) / 2), **subplots_kwargs)
 
         for (k, im), ax in zip(ims.items(), axs.flatten()):
             ax.imshow(im)
