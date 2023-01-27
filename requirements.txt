@@ -9,5 +9,5 @@ pytest
 torchvision
 torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 librosa
-pytorch-lightning
+pytorch-lightning[extra]
 snntorch
