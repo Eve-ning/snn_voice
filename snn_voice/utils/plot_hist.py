@@ -28,11 +28,16 @@ class PlotHist:
         self.net(input_ar)
         self._remove_hooks(hooks)
 
-    def plot(self, input_ar: torch.Tensor):
+    def plot(
+            self,
+            input_ar: torch.Tensor,
+            subplots_kwargs: dict = {}
+    ):
         """ Plots the hist
 
         Args:
             input_ar: Input Array to plot alongside the hist plot.
+            subplots_kwargs: Additional KWArgs for plt.subplots
         """
 
         self.forward(input_ar)
