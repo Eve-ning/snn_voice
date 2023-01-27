@@ -76,6 +76,7 @@ class PlotHist:
             im_t = im_t.abs()
             im = make_grid(
                 im_t,
+                nrow=25,
                 padding=self.im_padding,
                 pad_value=self.im_padding_value,
                 normalize=True
