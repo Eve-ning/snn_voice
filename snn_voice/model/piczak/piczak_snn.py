@@ -22,4 +22,4 @@ def piczak_snn_init(self):
         ])
     )
 
-    self.example_input_array = torch.rand([32, 1, 60, 101])
+    # self.example_input_array = torch.rand([32, 1, 60, 101])

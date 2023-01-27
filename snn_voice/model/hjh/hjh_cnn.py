@@ -26,7 +26,7 @@ class HjhCNN(ModuleCNN, ABC):
         )
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
 
-        self.example_input_array = torch.rand([32, 1, 60, 101])
+        # self.example_input_array = torch.rand([32, 1, 60, 101])
 
     def forward(self, x):
         x = self.conv_blks(x)
