@@ -23,7 +23,7 @@ class MxSNNBlock(nn.Module):
         conv = nn.Conv1d(in_chn, out_chn, ksize, step,
                          padding=int(ksize // 2 - 1))
         bn = nn.BatchNorm1d(out_chn)
-        lif = snn.Leaky(beta=lif_beta)
+        lif = snn.Leaky(beta=lif_beta, init_hidden=True)
         max_pool = nn.MaxPool1d(4)
 
         self.net = nn.Sequential(conv, bn, lif, max_pool)
