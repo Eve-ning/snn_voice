@@ -1,3 +1,5 @@
+from typing import Tuple
+
 import snntorch as snn
 from torch import nn
 
@@ -6,8 +8,10 @@ class PiczakSNNBlock(nn.Module):
     def __init__(
             self,
             in_chn: int, out_chn: int,
-            ksize: int, step: int,
-            max_pool_ksize: int, max_pool_step,
+            ksize: Tuple[int, int],
+            step: Tuple[int, int],
+            max_pool_ksize: Tuple[int, int],
+            max_pool_step: Tuple[int, int],
             lif_beta: float, dropout: float = 0.5
     ):
         """ A single SNN Block to be used in Piczak Models
