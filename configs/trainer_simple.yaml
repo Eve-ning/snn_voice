@@ -1,0 +1,3 @@
+max_epochs: 5
+accelerator: 'gpu'
+limit_val_batches: 64

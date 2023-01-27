@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Tuple
 
+import numpy as np
 import pytorch_lightning as pl
 import torch
 from sklearn.preprocessing import LabelEncoder
@@ -13,6 +14,8 @@ from torchaudio.datasets import SPEECHCOMMANDS
 from torchaudio.transforms import Resample, MelSpectrogram
 
 from snn_voice.settings import DATA_DIR, SPEECHCOMMAND_SR, MIN_WINDOW_MS
+
+EPSILON = np.finfo(np.float64).eps
 
 
 class SpeechCommandsDataModule(pl.LightningDataModule):
@@ -53,8 +56,6 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
         # We'll figure out the FFT window needed to satisfy the minimum window ms
         self.mel_spec = MelSpectrogram(n_mels=n_mels, n_fft=n_fft) if n_mels else n_mels
-        self.prepare_data()
-        self.setup()
 
     def prepare_data(self):
         """ Ran once to download all data necessary before data setup """
@@ -102,9 +103,14 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
             # Downsample: (Batch Size, 1, 16000) -> (Batch Size, 1, 4000)
             ar = self.downsample(ar)
+            ar = (ar - ar.mean()) / ar.std()
 
             if self.mel_spec is not None:
                 ar = self.mel_spec(ar)
+                ar = np.log(ar + EPSILON)
+                ar_ = ar[ar > -20]
+                ar = (ar - ar_.mean()) / ar_.std()
+                ar[ar < -5] = 0
 
             # ar: (Batch Size, 1, Mel Bands, Time Bands)
             #   : (Batch Size, 1, Time)
