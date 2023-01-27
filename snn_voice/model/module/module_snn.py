@@ -34,8 +34,8 @@ class ModuleSNN(Module, ABC):
         for step in range(self.n_steps):
             # Given that the 1st dim of xt is time step
             # x: Batch Size, Channel = 1, Sample Rate
-            x = xt[step]
-            yt_list.append(self.net(x))
+            x_ = xt[step]
+            yt_list.append(self.net(x_))
 
         # This will yield the time-step y
         # yt: Time Step, Batch Size, Channel = 1, Feature
