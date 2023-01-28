@@ -21,7 +21,7 @@ class ModuleSNN(Module, ABC):
         self.lif_beta = lif_beta
 
     @abstractmethod
-    def time_step_replica(self, x) -> torch.Tensor:
+    def time_step_replica(self, x, n_steps:int) -> torch.Tensor:
         """ This expands x's shape in the 1st dim for the forward function loop """
         ...
 
