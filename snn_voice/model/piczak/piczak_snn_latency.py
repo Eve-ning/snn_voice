@@ -1,8 +1,8 @@
-from snn_voice.model.module import ModuleSNNLatency
+from snn_voice.model.module import ModuleSNNLatency, ModuleSNN
 from snn_voice.model.piczak import piczak_snn_init
 
 
-class PiczakSNNLatency(ModuleSNNLatency):
+class PiczakSNNLatency(ModuleSNNLatency, ModuleSNN):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
