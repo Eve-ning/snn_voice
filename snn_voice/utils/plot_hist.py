@@ -62,6 +62,8 @@ class PlotHist:
                 im_t = ar[:, 0, :, 0, :]
             elif self.net_name.startswith("M5"):
                 im_t = ar[:, 0, :, :]
+            elif self.net_name.startswith("Hjh"):
+                im_t = ar[:, 0, :, 0, :]
 
             # Make grid from history
             # If there's n_steps, then it'll be stacked on the x-axis

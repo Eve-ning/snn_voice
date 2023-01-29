@@ -21,7 +21,7 @@ class HjhCNN(ModuleCNN, ABC):
         self.fc = nn.Linear(16, self.n_classes)
 
     def forward(self, x):
-        x = self.conv_blks(x)
+        x = self.cnn(x)
         x = self.avg_pool(x)
         x = self.flatten(x)
         return self.fc(x)
