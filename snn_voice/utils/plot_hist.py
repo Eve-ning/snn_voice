@@ -16,11 +16,19 @@ class PlotHist:
     im_width: int = 500
     im_padding: int = 3
     im_padding_value: int = 1
-    plot_mems: bool = True
+    hook_target: str = None
 
     def __post_init__(self):
-        self.hooks = [f'conv_blks.{x[0]}' for x in self.net.conv_blks.named_children()]
         self.net_name = self.net.__class__.__name__
+
+        # dynamically determine the hook target
+        if self.hook_target is None:
+            self.hook_target = 'cnn' if 'CNN' in self.net_name else 'snn'
+
+        self.hooks = [
+            f'{self.hook_target}.{e}'
+            for e, _ in enumerate(self.net.get_submodule(self.hook_target))
+        ]
 
     def forward(self, input_ar):
         self.hist = {}
@@ -50,22 +58,16 @@ class PlotHist:
             # If CNN M5     Input:      [BS x FB x TB]
 
             # Normalize the history shape
-            if self.net_name.startswith("PiczakSNN"):
-                ar_spks = torch.stack([x[0] for x in ar])
-                ar_mems = torch.stack([x[1] for x in ar])
-                im_t = (ar_mems if self.plot_mems else ar_spks)[:, 0, :, 0, :]
-            elif self.net_name == "PiczakCNN":
-                im_t = ar[0, :, 0, :].unsqueeze(0)
-            elif self.net_name.startswith("M5SNN"):
-                ar_spks = torch.stack([x[0] for x in ar])
-                ar_mems = torch.stack([x[1] for x in ar])
-                im_t = (ar_mems if self.plot_mems else ar_spks)[:, 0, :, :]
-            elif self.net_name == "M5CNN":
-                im_t = ar[0, :, :].unsqueeze(0)
+            ar = torch.stack(ar)
+            if self.net_name.startswith("Piczak"):
+                im_t = ar[:, 0, :, 0, :]
+            elif self.net_name.startswith("M5"):
+                im_t = ar[:, 0, :, :]
 
             # Make grid from history
             # If there's n_steps, then it'll be stacked on the x-axis
             im_t = im_t.unsqueeze(1)  # Add temp channel
+
             time_steps = im_t.shape[0]
             rs = Resize(
                 (self.im_height, int(self.im_height / time_steps)),
@@ -93,7 +95,6 @@ class PlotHist:
             ax.axis('off')
         fig.suptitle(
             f"{self.net.__class__.__name__}'s "
-            f"{'Membrane' if self.plot_mems else 'Spike'} "
             f"History. "
             f"{datetime.now().isoformat()}")
         plt.tight_layout()
@@ -115,13 +116,9 @@ class PlotHist:
         """
 
         def hook(model, input, output):
-            if type(output) == tuple:
-                if self.hist.get(key, None) is None:
-                    self.hist[key] = []
-                self.hist[key].append([o.detach() for o in output])
-                return
-
-            self.hist[key] = output.detach()
+            if self.hist.get(key, None) is None:
+                self.hist[key] = []
+            self.hist[key].append(output.detach())
 
         return self.net.get_submodule(key).register_forward_hook(hook)
 
