@@ -15,6 +15,8 @@ class Module(pl.LightningModule, ABC):
     def __init__(
             self,
             lr: float = LEARNING_RATE,
+            # TODO: Remove n_classes here and delegate it to the high-level API
+            #  to be consistent with the SNN API
             n_classes: int = len(SPEECHCOMMAND_CLASSES)
     ):
         """ Initializes an abstract datamodule for inheritance
