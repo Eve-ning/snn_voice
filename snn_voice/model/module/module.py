@@ -29,8 +29,6 @@ class Module(pl.LightningModule, ABC):
         self.lr = lr
         self.topk = TOPK
         self.n_classes = n_classes
-
-        self.avg_pool = nn.AdaptiveAvgPool1d(1)
         self.criterion = nn.CrossEntropyLoss()
         # We'll set a static example, exposing the correct sizes is too much of a workaround
         # self.example_input_array = torch.rand([32, 1, 4000])
