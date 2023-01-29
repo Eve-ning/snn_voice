@@ -6,4 +6,4 @@ class PiczakSNNRate(ModuleSNNRate, ModuleSNN):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        piczak_snn_init(self)
+        piczak_snn_init(self, lif_beta=self.lif_beta, n_classes=self.n_classes)
