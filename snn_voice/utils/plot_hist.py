@@ -37,27 +37,26 @@ class PlotHist:
         self.net(input_ar)
         self._remove_hooks(hooks)
 
-    def plot(
-            self,
-            input_ar: torch.Tensor,
-            subplots_kwargs: dict = {}
-    ):
-        """ Plots the hist
+    def plot(self, input_ar: torch.Tensor, subplots_kwargs: dict = {}):
+        """ Plots the network history given the input array
 
         Args:
             input_ar: Input Array to plot alongside the hist plot.
             subplots_kwargs: Additional KWArgs for plt.subplots
         """
 
+        # Propagate array through network
         self.forward(input_ar)
+
         ims = {}
         for k, ar in self.hist.items():
             # If SNN Piczak Input: [TS x BS x FB x 1 x TB]
-            # If CNN Piczak Input:      [BS x FB x 1 x TB]
+            # If CNN Piczak Input: [1  x BS x FB x 1 x TB]
             # If SNN M5     Input: [TS x BS x FB x TB]
-            # If CNN M5     Input:      [BS x FB x TB]
+            # If CNN M5     Input: [1  x BS x FB x TB]
 
             # Normalize the history shape
+            # We'll pull TS x FB x TB
             ar = torch.stack(ar)
             if self.net_name.startswith("Piczak"):
                 im_t = ar[:, 0, :, 0, :]
@@ -73,6 +72,7 @@ class PlotHist:
                 (self.im_height, int(self.im_height / time_steps)),
                 interpolation=InterpolationMode.NEAREST
             )
+
             # We resize EACH time step
             im_t = rs(im_t)
 
@@ -111,7 +111,6 @@ class PlotHist:
             feature_extraction, and its submodule, conv1.
 
         Args:
-            net: Model Instance to hook
             key: Name of Submodule
         """
 
