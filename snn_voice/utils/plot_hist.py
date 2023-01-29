@@ -72,7 +72,7 @@ class PlotHist:
 
             time_steps = im_t.shape[0]
             rs = Resize(
-                (self.im_height, int(self.im_height / time_steps)),
+                (self.im_height, int(self.im_width / time_steps)),
                 interpolation=InterpolationMode.NEAREST
             )
 
