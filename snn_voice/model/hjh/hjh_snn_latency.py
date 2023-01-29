@@ -1,9 +1,13 @@
-from snn_voice.model.module import ModuleSNNLatency
-from snn_voice.model.hjh import hjh_snn_init
+import torch
+
+from snn_voice.model.hjh.hjh_snn import HjhSNN
+from snn_voice.utils.time_step_replica import latency_replica
 
 
-class HjhSNNLatency(ModuleSNNLatency):
+class HjhSNNLatency(HjhSNN):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        hjh_snn_init(self)
+    def __init__(self, lif_beta: float, n_classes: int, n_steps: int):
+        super().__init__(lif_beta, n_classes, n_steps)
+
+    def time_step_replica(self, x, n_steps: int) -> torch.Tensor:
+        return latency_replica(x, n_steps)
