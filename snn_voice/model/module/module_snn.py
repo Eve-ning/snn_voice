@@ -10,19 +10,21 @@ class ModuleSNN(Module, ABC):
 
     def __init__(
             self,
-            n_steps: int = 2,
-            lif_beta: float = 0.2,
+            n_steps: int,
             *args,
             **kwargs
     ):
         super().__init__(*args, **kwargs)
 
         self.n_steps = n_steps
-        self.lif_beta = lif_beta
 
     @abstractmethod
     def time_step_replica(self, x, n_steps: int) -> torch.Tensor:
         """ This expands x's shape in the 1st dim for the forward function loop """
+        ...
+
+    @abstractmethod
+    def time_step_forward(self, x) -> torch.Tensor:
         ...
 
     def forward(self, x):
@@ -30,7 +32,7 @@ class ModuleSNN(Module, ABC):
         xt = self.time_step_replica(x, self.n_steps)
 
         # yt: Time Step, Batch Size, Channel = 1, Feature
-        yt = torch.stack([self.net(x_) for x_ in xt], dim=0)
+        yt = torch.stack([self.time_step_forward(x_) for x_ in xt], dim=0)
         return yt
 
     def step(self, batch):
