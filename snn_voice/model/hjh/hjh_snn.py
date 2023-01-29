@@ -4,7 +4,6 @@ from torch import nn
 
 from snn_voice.model.hjh.blocks import HjhCNNBlock
 from snn_voice.model.module import ModuleSNN
-from snn_voice.utils.time_step_replica import repeat_replica
 
 
 class HjhSNN(ModuleSNN, nn.Module):
@@ -25,4 +24,3 @@ class HjhSNN(ModuleSNN, nn.Module):
         x = self.avg_pool(x)
         x = self.flatten(x)
         return self.fc(x)
-
