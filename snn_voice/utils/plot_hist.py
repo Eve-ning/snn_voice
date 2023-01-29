@@ -16,19 +16,20 @@ class PlotHist:
     im_width: int = 500
     im_padding: int = 3
     im_padding_value: int = 1
-    hook_target: str = None
 
     def __post_init__(self):
         self.net_name = self.net.__class__.__name__
 
-        # dynamically determine the hook target
-        if self.hook_target is None:
-            self.hook_target = 'cnn' if 'CNN' in self.net_name else 'snn'
+        try:
+            cnn_hooks = [f'cnn.{e}' for e, _ in enumerate(self.net.get_submodule('cnn'))]
+        except:
+            cnn_hooks = []
+        try:
+            snn_hooks = [f'snn.{e}' for e, _ in enumerate(self.net.get_submodule('snn'))]
+        except:
+            snn_hooks = []
 
-        self.hooks = [
-            f'{self.hook_target}.{e}'
-            for e, _ in enumerate(self.net.get_submodule(self.hook_target))
-        ]
+        self.hooks = [*snn_hooks, *cnn_hooks]
 
     def forward(self, input_ar):
         self.hist = {}
