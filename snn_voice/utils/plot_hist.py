@@ -90,16 +90,27 @@ class PlotHist:
             im = im.permute(1, 2, 0)
             ims[k] = im
 
-        fig, axs = plt.subplots(2, int(len(ims) / 2), **subplots_kwargs)
+        n_ims = len(ims)
 
-        for (k, im), ax in zip(ims.items(), axs.flatten()):
+        # TODO: Is there a better way to compress this?
+        if n_ims == 1:
+            fig, axs = plt.subplots(1, 1, **subplots_kwargs)
+        elif n_ims == 2:
+            fig, axs = plt.subplots(2, 1, **subplots_kwargs)
+        elif n_ims == 3:
+            fig, axs = plt.subplots(3, 1, **subplots_kwargs)
+        elif n_ims == 4:
+            fig, axs = plt.subplots(2, 2, **subplots_kwargs)
+
+        for (k, im), ax in zip(ims.items(), [axs] if n_ims == 1 else axs.flatten()):
             ax.imshow(im)
             ax.set_title(k)
             ax.axis('off')
         fig.suptitle(
             f"{self.net.__class__.__name__}'s "
             f"History. "
-            f"{datetime.now().isoformat()}")
+            f"{datetime.now().isoformat()}"
+        )
         plt.tight_layout()
         plt.show()
 
