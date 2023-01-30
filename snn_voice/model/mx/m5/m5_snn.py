@@ -5,8 +5,8 @@ from snn_voice.model.mx.blocks import MxSNNBlock
 
 
 class M5SNN(ModuleSNN, nn.Module):
-    def __init__(self, n_classes: int, lif_beta: float, n_steps: int):
-        super().__init__(n_steps=n_steps)
+    def __init__(self, n_classes: int, lif_beta: float, n_steps: int, *args, **kwargs):
+        super().__init__(n_steps=n_steps, *args, **kwargs)
         self.snn = nn.Sequential(
             MxSNNBlock(1, 128, 80, lif_beta, 4),
             MxSNNBlock(128, 128, 3, lif_beta),
