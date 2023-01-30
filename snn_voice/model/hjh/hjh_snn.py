@@ -1,4 +1,4 @@
-from abc import ABC
+from typing import Callable
 
 import snntorch as snn
 import torch
@@ -8,9 +8,10 @@ from snn_voice.model.hjh.blocks import HjhCNNBlock
 from snn_voice.model.module import ModuleSNN
 
 
-class HjhSNN(ModuleSNN, nn.Module, ABC):
-    def __init__(self, n_classes: int, lif_beta: float, n_steps: int, *args, **kwargs):
-        super().__init__(n_steps=n_steps, *args, **kwargs)
+class HjhSNN(ModuleSNN, nn.Module):
+    def __init__(self, n_classes: int, lif_beta: float, n_steps: int,
+                 time_step_replica: Callable[[torch.Tensor, int], torch.Tensor]):
+        super().__init__(n_steps=n_steps, time_step_replica=time_step_replica)
         self.snn = nn.Sequential(
             snn.Leaky(beta=lif_beta, init_hidden=True)
         )

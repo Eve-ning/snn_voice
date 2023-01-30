@@ -1,4 +1,5 @@
 from abc import abstractmethod, ABC
+from typing import Callable
 
 import torch
 
@@ -11,17 +12,18 @@ class ModuleSNN(Module, ABC):
     def __init__(
             self,
             n_steps: int,
+            time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
             *args,
             **kwargs
     ):
         super().__init__(*args, **kwargs)
 
         self.n_steps = n_steps
+        self.time_step_replica_ = time_step_replica
 
-    @abstractmethod
     def time_step_replica(self, x, n_steps: int) -> torch.Tensor:
         """ This expands x's shape in the 1st dim for the forward function loop """
-        ...
+        return self.time_step_replica_(x, n_steps)
 
     @abstractmethod
     def time_step_forward(self, x) -> torch.Tensor:
