@@ -11,8 +11,8 @@ class TcySNN(ModuleSNN, nn.Module):
 
     def __init__(self, n_classes: int, lif_beta: float, n_steps: int,
                  time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
-                 n_channels: int = 10):
-        super().__init__(n_steps=n_steps, time_step_replica=time_step_replica)
+                 n_channels: int = 10, *args, **kwargs):
+        super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)
         self.lif = snn.Leaky(beta=lif_beta, init_hidden=True)
         self.avg_pool = nn.AdaptiveAvgPool2d(n_channels)
         self.flatten = nn.Flatten(start_dim=1)
