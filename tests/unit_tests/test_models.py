@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 from snn_voice.model.hjh import HjhCNN, HjhSCNN, HjhSNN
 from snn_voice.model.mx.m5 import M5CNN, M5SNN
 from snn_voice.model.piczak import PiczakCNN, PiczakSNN
+from snn_voice.model.tcy import TcyNN, TcySNN
 from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, latency_replica
 
 
@@ -19,6 +20,10 @@ from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, late
     HjhSNN(35, 0.5, 2, repeat_replica),
     HjhSNN(35, 0.5, 2, rate_replica),
     HjhSNN(35, 0.5, 2, latency_replica),
+    TcyNN(35),
+    TcySNN(35, 0.5, 2, repeat_replica),
+    TcySNN(35, 0.5, 2, rate_replica),
+    TcySNN(35, 0.5, 2, latency_replica),
 ])
 def test_spec_models(net, dm_spec):
     run_experiment(net, dm_spec)
