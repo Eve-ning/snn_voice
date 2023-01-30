@@ -12,5 +12,6 @@ class M5SNNRate(M5SNN):
             lif_beta=lif_beta,
             n_steps=n_steps
         )
+
     def time_step_replica(self, x, n_steps: int) -> torch.Tensor:
         return rate_replica(x, n_steps)
