@@ -8,7 +8,7 @@ from snn_voice.model.module import ModuleCNN
 
 class HjhCNN(ModuleCNN, ABC):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, n_classes: int, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.cnn = nn.Sequential(
@@ -18,7 +18,7 @@ class HjhCNN(ModuleCNN, ABC):
 
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.flatten = nn.Flatten(start_dim=1)
-        self.fc = nn.Linear(16, self.n_classes)
+        self.fc = nn.Linear(16, n_classes)
 
     def forward(self, x):
         x = self.cnn(x)
