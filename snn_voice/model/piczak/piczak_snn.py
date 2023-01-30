@@ -5,7 +5,7 @@ from snn_voice.model.piczak.blocks import PiczakSNNBlock
 
 
 class PiczakSNN(ModuleSNN, nn.Module):
-    def __init__(self, lif_beta: float, n_classes: int, n_steps: int):
+    def __init__(self, n_classes: int, lif_beta: float, n_steps: int):
         super().__init__(n_steps=n_steps)
         self.snn = nn.Sequential(
             PiczakSNNBlock(1, 80, (57, 6), (1, 1), (4, 3), (1, 3), lif_beta, 0.5),
