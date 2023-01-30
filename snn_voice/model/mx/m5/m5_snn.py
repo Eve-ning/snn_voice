@@ -1,4 +1,3 @@
-from abc import ABC
 from typing import Callable
 
 import torch
@@ -8,7 +7,7 @@ from snn_voice.model.module import ModuleSNN
 from snn_voice.model.mx.blocks import MxSNNBlock
 
 
-class M5SNN(ModuleSNN, nn.Module, ABC):
+class M5SNN(ModuleSNN, nn.Module):
     def __init__(self, n_classes: int, lif_beta: float, n_steps: int,
                  time_step_replica: Callable[[torch.Tensor, int], torch.Tensor]):
         super().__init__(n_steps=n_steps, time_step_replica=time_step_replica)
