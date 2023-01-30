@@ -8,7 +8,7 @@ from snn_voice.model.piczak.blocks import PiczakCNNBlock
 
 class PiczakCNN(ModuleCNN, ABC):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, n_classes, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         self.cnn = nn.Sequential(
@@ -20,7 +20,7 @@ class PiczakCNN(ModuleCNN, ABC):
         self.fc = nn.Sequential(
             nn.Sequential(nn.Linear(80, 5000), nn.Dropout(0.5), nn.ReLU()),
             nn.Sequential(nn.Linear(5000, 5000), nn.Dropout(0.5), nn.ReLU()),
-            nn.Sequential(nn.Linear(5000, self.n_classes))
+            nn.Sequential(nn.Linear(5000, n_classes))
         )
 
     def forward(self, x):
