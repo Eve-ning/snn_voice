@@ -9,8 +9,9 @@ from snn_voice.model.piczak.blocks import PiczakSNNBlock
 
 class PiczakSNN(ModuleSNN, nn.Module):
     def __init__(self, n_classes: int, lif_beta: float, n_steps: int,
-                 time_step_replica: Callable[[torch.Tensor, int], torch.Tensor]):
-        super().__init__(n_steps=n_steps, time_step_replica=time_step_replica)
+                 time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
+                 *args, **kwargs):
+        super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)
         self.snn = nn.Sequential(
             PiczakSNNBlock(1, 80, (57, 6), (1, 1), (4, 3), (1, 3), lif_beta, 0.5),
             PiczakSNNBlock(80, 80, (1, 3), (1, 1), (1, 3), (1, 3), lif_beta, 0)
