@@ -6,20 +6,20 @@ from snn_voice.model.piczak import PiczakCNN, PiczakSNNLatency, PiczakSNNRate, P
 
 
 @pytest.mark.parametrize('net', [
-    PiczakCNN(),
-    PiczakSNNRate(0.5, 35, 2),
-    PiczakSNNRepeat(0.5, 35, 2),
-    PiczakSNNLatency(0.5, 35, 2),
+    PiczakCNN(35),
+    PiczakSNNRate(35, 0.5, 2),
+    PiczakSNNRepeat(35, 0.5, 2),
+    PiczakSNNLatency(35, 0.5, 2),
 ])
 def test_spec_models(net, dm_spec):
     run_experiment(net, dm_spec)
 
 
 @pytest.mark.parametrize('net', [
-    M5CNN(),
-    M5SNNRate(0.5, 35, 2),
-    M5SNNRepeat(0.5, 35, 2),
-    M5SNNLatency(0.5, 35, 2)
+    M5CNN(35),
+    M5SNNRate(35, 0.5, 2),
+    M5SNNRepeat(35, 0.5, 2),
+    M5SNNLatency(35, 0.5, 2)
 ])
 def test_models(net, dm):
     run_experiment(net, dm)
