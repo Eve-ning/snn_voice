@@ -6,7 +6,7 @@ import torch
 from torch import nn
 from torch.optim.lr_scheduler import OneCycleLR
 
-from snn_voice.settings import SPEECHCOMMAND_CLASSES, TOPK, LEARNING_RATE
+from snn_voice.settings import TOPK, LEARNING_RATE
 
 
 class Module(pl.LightningModule, ABC):
@@ -15,25 +15,19 @@ class Module(pl.LightningModule, ABC):
     def __init__(
             self,
             lr: float = LEARNING_RATE,
-            n_classes: int = len(SPEECHCOMMAND_CLASSES)
     ):
         """ Initializes an abstract datamodule for inheritance
 
         Args:
             lr: Learning Rate
-            topk: A Tuple of top-k accuracies to track
-            n_classes: Number of output classes. E.g. SpeechCommands will have 35
         """
 
         super().__init__()
         self.lr = lr
         self.topk = TOPK
-        self.n_classes = n_classes
-
-        self.avg_pool = nn.AdaptiveAvgPool1d(1)
         self.criterion = nn.CrossEntropyLoss()
         # We'll set a static example, exposing the correct sizes is too much of a workaround
-        self.example_input_array = torch.rand([32, 1, 4000])
+        # self.example_input_array = torch.rand([32, 1, 4000])
 
     def training_step(self, batch, batch_ix):
         """ A single step for training

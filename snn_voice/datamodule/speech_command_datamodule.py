@@ -63,7 +63,6 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
     def setup(self, stage=""):
         """ Sets up the train, validation & test """
-        self.le.fit(self.classes)
         self.train = SPEECHCOMMANDS(self.data_dir.as_posix(), subset="training")
         self.val = SPEECHCOMMANDS(self.data_dir.as_posix(), subset="validation")
         self.test = SPEECHCOMMANDS(self.data_dir.as_posix(), subset="testing")
@@ -86,6 +85,8 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         Notes:
             A factory is necessary to include the self.le via a non-arg
         """
+
+        self.le.fit(self.classes)
 
         def collate_fn(x):
             # E.g. i.shape = (1, 16000)

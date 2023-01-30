@@ -1,9 +1,17 @@
-from snn_voice.model.module import ModuleSNNRepeat
-from snn_voice.model.mx.m5 import m5_snn_init
+import torch
+
+from snn_voice.model.mx.m5 import M5SNN
+from snn_voice.utils.time_step_replica import repeat_replica
 
 
-class M5SNNRepeat(ModuleSNNRepeat):
+class M5SNNRepeat(M5SNN):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        m5_snn_init(self)
+    def __init__(self, n_classes: int, lif_beta: float, n_steps: int):
+        super().__init__(
+            n_classes=n_classes,
+            lif_beta=lif_beta,
+            n_steps=n_steps
+        )
+
+    def time_step_replica(self, x, n_steps: int) -> torch.Tensor:
+        return repeat_replica(x, n_steps)

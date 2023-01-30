@@ -1,33 +1,38 @@
 import pytest
 import pytorch_lightning as pl
 
+from snn_voice.model.hjh import HjhCNN, HjhSNNRate, HjhSNNRepeat, HjhSNNLatency
 from snn_voice.model.mx.m5 import M5CNN, M5SNNLatency, M5SNNRate, M5SNNRepeat
 from snn_voice.model.piczak import PiczakCNN, PiczakSNNLatency, PiczakSNNRate, PiczakSNNRepeat
 
 
-@pytest.mark.parametrize('Model', [
-    PiczakCNN,
-    PiczakSNNRate,
-    PiczakSNNRepeat,
-    PiczakSNNLatency
+@pytest.mark.parametrize('net', [
+    PiczakCNN(35),
+    PiczakSNNRate(35, 0.5, 2),
+    PiczakSNNRepeat(35, 0.5, 2),
+    PiczakSNNLatency(35, 0.5, 2),
+    HjhCNN(35),
+    HjhSNNRate(35, 0.5, 2),
+    HjhSNNRepeat(35, 0.5, 2),
+    HjhSNNLatency(35, 0.5, 2),
 ])
-def test_spec_models(Model, dm_spec):
-    run_experiment(Model, dm_spec)
+def test_spec_models(net, dm_spec):
+    run_experiment(net, dm_spec)
 
 
-@pytest.mark.parametrize('Model', [
-    M5CNN,
-    M5SNNRate,
-    M5SNNRepeat,
-    M5SNNLatency
+@pytest.mark.parametrize('net', [
+    M5CNN(35),
+    M5SNNRate(35, 0.5, 2),
+    M5SNNRepeat(35, 0.5, 2),
+    M5SNNLatency(35, 0.5, 2)
 ])
-def test_models(Model, dm):
-    run_experiment(Model, dm)
+def test_models(net, dm):
+    run_experiment(net, dm)
 
 
-def run_experiment(Model, dm):
-    """ Runs a singular experiment for each Model and DataModule """
-    net = Model()
+def run_experiment(net, dm):
+    """ Runs a singular experiment for each net and DataModule """
+    net = net
 
     trainer = pl.Trainer(fast_dev_run=True, accelerator='cpu')
     trainer.fit(net, datamodule=dm)
