@@ -1,10 +1,12 @@
+from abc import ABC
+
 from torch import nn
 
 from snn_voice.model.module import ModuleSNN
 from snn_voice.model.piczak.blocks import PiczakSNNBlock
 
 
-class PiczakSNN(ModuleSNN, nn.Module):
+class PiczakSNN(ModuleSNN, nn.Module, ABC):
     def __init__(self, n_classes: int, lif_beta: float, n_steps: int):
         super().__init__(n_steps=n_steps)
         self.snn = nn.Sequential(

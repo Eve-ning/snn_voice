@@ -1,10 +1,12 @@
+from abc import ABC
+
 from torch import nn
 
 from snn_voice.model.module import ModuleSNN
 from snn_voice.model.mx.blocks import MxSNNBlock
 
 
-class M5SNN(ModuleSNN, nn.Module):
+class M5SNN(ModuleSNN, nn.Module, ABC):
     def __init__(self, n_classes: int, lif_beta: float, n_steps: int, *args, **kwargs):
         super().__init__(n_steps=n_steps, *args, **kwargs)
         self.snn = nn.Sequential(

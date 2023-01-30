@@ -1,3 +1,5 @@
+from abc import ABC
+
 import snntorch as snn
 import torch
 from torch import nn
@@ -6,7 +8,7 @@ from snn_voice.model.hjh.blocks import HjhCNNBlock
 from snn_voice.model.module import ModuleSNN
 
 
-class HjhSNN(ModuleSNN, nn.Module):
+class HjhSNN(ModuleSNN, nn.Module, ABC):
     def __init__(self, n_classes: int, lif_beta: float, n_steps: int, *args, **kwargs):
         super().__init__(n_steps=n_steps, *args, **kwargs)
         self.snn = nn.Sequential(
