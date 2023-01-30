@@ -7,8 +7,8 @@ from snn_voice.model.module import ModuleSNN
 
 
 class HjhSNN(ModuleSNN, nn.Module):
-    def __init__(self, lif_beta: float, n_classes: int, n_steps: int):
-        super().__init__(n_steps=n_steps)
+    def __init__(self, n_classes: int, lif_beta: float, n_steps: int, *args, **kwargs):
+        super().__init__(n_steps=n_steps, *args, **kwargs)
         self.snn = nn.Sequential(
             snn.Leaky(beta=lif_beta, init_hidden=True)
         )
