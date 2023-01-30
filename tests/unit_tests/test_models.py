@@ -1,20 +1,21 @@
 import pytest
 import pytorch_lightning as pl
 
-from snn_voice.model.hjh import HjhCNN, HjhSNNRate, HjhSNNRepeat, HjhSNNLatency
-from snn_voice.model.mx.m5 import M5CNN, M5SNNLatency, M5SNNRate, M5SNNRepeat
-from snn_voice.model.piczak import PiczakCNN, PiczakSNNLatency, PiczakSNNRate, PiczakSNNRepeat
+from snn_voice.model.hjh import HjhCNN, HjhSNN
+from snn_voice.model.mx.m5 import M5CNN, M5SNN
+from snn_voice.model.piczak import PiczakCNN, PiczakSNN
+from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, latency_replica
 
 
 @pytest.mark.parametrize('net', [
     PiczakCNN(35),
-    PiczakSNNRate(35, 0.5, 2),
-    PiczakSNNRepeat(35, 0.5, 2),
-    PiczakSNNLatency(35, 0.5, 2),
+    PiczakSNN(35, 0.5, 2, repeat_replica),
+    PiczakSNN(35, 0.5, 2, rate_replica),
+    PiczakSNN(35, 0.5, 2, latency_replica),
     HjhCNN(35),
-    HjhSNNRate(35, 0.5, 2),
-    HjhSNNRepeat(35, 0.5, 2),
-    HjhSNNLatency(35, 0.5, 2),
+    HjhSNN(35, 0.5, 2, repeat_replica),
+    HjhSNN(35, 0.5, 2, rate_replica),
+    HjhSNN(35, 0.5, 2, latency_replica),
 ])
 def test_spec_models(net, dm_spec):
     run_experiment(net, dm_spec)
@@ -22,9 +23,9 @@ def test_spec_models(net, dm_spec):
 
 @pytest.mark.parametrize('net', [
     M5CNN(35),
-    M5SNNRate(35, 0.5, 2),
-    M5SNNRepeat(35, 0.5, 2),
-    M5SNNLatency(35, 0.5, 2)
+    M5SNN(35, 0.5, 2, repeat_replica),
+    M5SNN(35, 0.5, 2, rate_replica),
+    M5SNN(35, 0.5, 2, latency_replica),
 ])
 def test_models(net, dm):
     run_experiment(net, dm)
