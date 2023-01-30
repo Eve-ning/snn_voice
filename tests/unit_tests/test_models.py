@@ -1,6 +1,7 @@
 import pytest
 import pytorch_lightning as pl
 
+from snn_voice.model.hjh import HjhCNN, HjhSNNRate, HjhSNNRepeat, HjhSNNLatency
 from snn_voice.model.mx.m5 import M5CNN, M5SNNLatency, M5SNNRate, M5SNNRepeat
 from snn_voice.model.piczak import PiczakCNN, PiczakSNNLatency, PiczakSNNRate, PiczakSNNRepeat
 
@@ -10,6 +11,10 @@ from snn_voice.model.piczak import PiczakCNN, PiczakSNNLatency, PiczakSNNRate, P
     PiczakSNNRate(35, 0.5, 2),
     PiczakSNNRepeat(35, 0.5, 2),
     PiczakSNNLatency(35, 0.5, 2),
+    HjhCNN(35),
+    HjhSNNRate(35, 0.5, 2),
+    HjhSNNRepeat(35, 0.5, 2),
+    HjhSNNLatency(35, 0.5, 2),
 ])
 def test_spec_models(net, dm_spec):
     run_experiment(net, dm_spec)
