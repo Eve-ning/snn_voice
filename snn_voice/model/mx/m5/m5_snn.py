@@ -31,4 +31,4 @@ class M5SNN(ModuleSNN, nn.Module):
         return self.fc(x)
 
     def init_mems(self) -> List[torch.Tensor]:
-        return [blk.init_mem() for blk in self.snn]
+        return [blk.init_leaky() for blk in self.snn]

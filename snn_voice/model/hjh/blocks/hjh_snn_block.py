@@ -23,12 +23,15 @@ class HjhSNNBlock(nn.Module):
         self.conv = nn.Conv2d(in_chn, out_chn, ksize, 1, padding='same')
         self.bn = nn.BatchNorm2d(out_chn)
         self.max_pool = nn.MaxPool2d(max_pool_ksize, max_pool_ksize) if max_pool_ksize else None
-        self.lif = snn.Leaky(beta=lif_beta, init_hidden=True)
+        self.lif = snn.Leaky(beta=lif_beta)
 
-    def forward(self, x):
+    def forward(self, x, mem):
         x = self.conv(x)
         x = self.bn(x)
-        x = self.lif(x)
+        x, mem = self.lif(x, mem)
         if self.max_pool:
             x = self.max_pool(x)
-        return x
+        return x, mem
+
+    def init_leaky(self):
+        return self.lif.init_leaky()
