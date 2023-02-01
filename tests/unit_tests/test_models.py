@@ -50,4 +50,4 @@ def run_experiment(net, dm):
         max_epochs=1,
     )
     trainer.fit(net, datamodule=dm)
-    pred = trainer.predict(net, datamodule=dm)
+    # pred = trainer.predict(net, datamodule=dm)
