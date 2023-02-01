@@ -1,5 +1,7 @@
 from pathlib import Path
 
+import numpy as np
+
 SPEECHCOMMAND_SR: int = 16000
 
 SPEECHCOMMAND_CLASSES = (
@@ -15,7 +17,7 @@ ROOT_DIR = SRC_DIR.parent
 DATA_DIR = ROOT_DIR / "data"
 DATA_SAMPLE_DIR = ROOT_DIR / "data_sample"
 
-EPSILON = 1e-10
+EPSILON = np.finfo(np.float64).eps
 
 LEARNING_RATE = 0.01
 TOPK = (1, 2, 5)
