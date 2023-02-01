@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Tuple
 
@@ -5,8 +7,8 @@ import pytorch_lightning as pl
 from torch.utils.data import DataLoader, Dataset, random_split
 from torchaudio import load
 
+from snn_voice.datamodule.collate import CollateFn
 from snn_voice.settings import SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES, DATA_SAMPLE_DIR
-from snn_voice.utils.collate import CollateFn
 
 
 class SampleDatasetBase(Dataset):
@@ -30,19 +32,21 @@ class SampleDataModule(pl.LightningDataModule):
     batch_size: int = 4
     classes: Tuple[str] = SPEECHCOMMAND_CLASSES
     data_dir = DATA_SAMPLE_DIR
-    num_workers: int = 0
+    n_mels: int | None = 60
     dl_kwargs: dict = field(default_factory=dict)
 
     def __post_init__(self):
         super(SampleDataModule, self).__init__()
-        self.collate_fn = CollateFn(SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES)
+        self.collate_fn = CollateFn(SPEECHCOMMAND_SR, SPEECHCOMMAND_CLASSES,
+                                    n_mels=self.n_mels)
         ds = SampleDatasetBase(self.data_dir)
         ds_ea_size = int(len(ds) // 3)
         self.train_ds, self.val_ds, self.test_ds = random_split(ds, (ds_ea_size,) * 3)
-        self.dl_kwargs = {**self.dl_kwargs,
-                          'batch_size': self.batch_size,
-                          'collate_fn': self.collate_fn,
-                          'num_workers': self.num_workers}
+        self.dl_kwargs = {
+            **self.dl_kwargs,
+            'batch_size': self.batch_size,
+            'collate_fn': self.collate_fn,
+        }
 
     def train_dataloader(self):
         return DataLoader(self.train_ds, shuffle=True, **self.dl_kwargs)
