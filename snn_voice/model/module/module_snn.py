@@ -1,5 +1,5 @@
 from abc import abstractmethod, ABC
-from typing import Callable
+from typing import Callable, List
 
 import torch
 
@@ -26,7 +26,12 @@ class ModuleSNN(Module, ABC):
         return self.time_step_replica_(x, n_steps)
 
     @abstractmethod
-    def time_step_forward(self, x) -> torch.Tensor:
+    def time_step_forward(self, x, mems: List[torch.Tensor]) -> torch.Tensor:
+        ...
+
+    @abstractmethod
+    def init_mems(self) -> List[torch.Tensor]:
+        """ Initialized Membrane for SNN Layers """
         ...
 
     def forward(self, x):
@@ -34,7 +39,18 @@ class ModuleSNN(Module, ABC):
         xt = self.time_step_replica(x, self.n_steps)
 
         # yt: Time Step, Batch Size, Channel = 1, Feature
-        yt = torch.stack([self.time_step_forward(x_) for x_ in xt], dim=0)
+        yt_list = []
+        mems = self.init_mems()
+
+        for step in range(self.n_steps):
+            x = xt[step]
+            y = self.time_step_forward(x, mems)
+            yt_list.append(y)
+
+        for mem in mems:
+            mem.detach()
+
+        yt = torch.stack(yt_list, dim=0)
         return yt
 
     def step(self, batch):

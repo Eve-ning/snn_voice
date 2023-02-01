@@ -1,4 +1,5 @@
 import snntorch as snn
+import torch
 from torch import nn
 
 
@@ -20,13 +21,17 @@ class MxSNNBlock(nn.Module):
         """
         super().__init__()
 
-        conv = nn.Conv1d(in_chn, out_chn, ksize, step,
-                         padding=int(ksize // 2 - 1))
-        bn = nn.BatchNorm1d(out_chn)
-        lif = snn.Leaky(beta=lif_beta, init_hidden=True)
-        max_pool = nn.MaxPool1d(4)
+        self.conv = nn.Conv1d(in_chn, out_chn, ksize, step, padding=int(ksize // 2 - 1))
+        self.bn = nn.BatchNorm1d(out_chn)
+        self.lif = snn.Leaky(beta=lif_beta)
+        self.max_pool = nn.MaxPool1d(4)
 
-        self.net = nn.Sequential(conv, bn, lif, max_pool)
+    def init_leaky(self):
+        return self.lif.init_leaky()
 
-    def forward(self, x):
-        return self.net(x)
+    def forward(self, x, mem: torch.Tensor):
+        x = self.conv(x)
+        x = self.bn(x)
+        x, mem = self.lif(x, mem)
+        x = self.max_pool(x)
+        return x, mem

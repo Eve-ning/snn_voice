@@ -43,6 +43,11 @@ def run_experiment(net, dm):
     """ Runs a singular experiment for each net and DataModule """
     net = net
 
-    trainer = pl.Trainer(fast_dev_run=True, accelerator='cpu')
+    trainer = pl.Trainer(
+        accelerator='cpu',
+        limit_train_batches=2,
+        limit_val_batches=1,
+        max_epochs=1,
+    )
     trainer.fit(net, datamodule=dm)
-    pred = trainer.predict(net, datamodule=dm)
+    # pred = trainer.predict(net, datamodule=dm)

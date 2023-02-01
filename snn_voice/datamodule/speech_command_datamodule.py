@@ -13,9 +13,7 @@ from torchaudio import load
 from torchaudio.datasets import SPEECHCOMMANDS
 from torchaudio.transforms import Resample, MelSpectrogram
 
-from snn_voice.settings import DATA_DIR, SPEECHCOMMAND_SR, MIN_WINDOW_MS
-
-EPSILON = np.finfo(np.float64).eps
+from snn_voice.settings import DATA_DIR, SPEECHCOMMAND_SR, MIN_WINDOW_MS, EPSILON
 
 
 class SpeechCommandsDataModule(pl.LightningDataModule):
