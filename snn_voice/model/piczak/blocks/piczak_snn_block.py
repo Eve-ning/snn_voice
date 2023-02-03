@@ -13,7 +13,10 @@ class PiczakSNNBlock(nn.Module):
             step: Tuple[int, int],
             max_pool_ksize: Tuple[int, int],
             max_pool_step: Tuple[int, int],
-            lif_beta: float, dropout: float = 0.5
+            beta: float,
+            dropout: float = 0.5,
+            learn_beta: bool = True,
+            learn_thres: bool = False,
     ):
         """ A single SNN Block to be used in Piczak Models
 
@@ -24,15 +27,17 @@ class PiczakSNNBlock(nn.Module):
             step: Step Size for Conv2d
             max_pool_ksize: Max Pool 2D Kernel Size
             max_pool_step: Max Pool 2D Step Size
-            lif_beta: Beta for Leaky & Fire
+            beta: Beta for Leaky & Fire
             dropout: Dropout probability
+            learn_beta: Whether to set beta to be learnable
+            learn_thres: Whether to set threshold to be learnable
         """
         super().__init__()
 
         self.conv = nn.Conv2d(in_chn, out_chn, ksize, step)
         self.max_pool = nn.MaxPool2d(max_pool_ksize, max_pool_step)
         self.dropout = nn.Dropout(dropout)
-        self.lif = snn.Leaky(beta=lif_beta)
+        self.lif = snn.Leaky(beta=beta, learn_beta=learn_beta, learn_threshold=learn_thres)
 
     def forward(self, x, mem: torch.Tensor):
         x = self.conv(x)

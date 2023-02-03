@@ -10,20 +10,20 @@ from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, late
 
 @pytest.mark.parametrize('net', [
     PiczakCNN(35),
-    PiczakSNN(35, 0.5, 2, repeat_replica),
-    PiczakSNN(35, 0.5, 2, rate_replica),
-    PiczakSNN(35, 0.5, 2, latency_replica),
+    PiczakSNN(35, 2, repeat_replica),
+    PiczakSNN(35, 2, rate_replica),
+    PiczakSNN(35, 2, latency_replica),
     HjhCNN(35),
-    HjhSCNN(35, 0.5, 2, repeat_replica),
-    HjhSCNN(35, 0.5, 2, rate_replica),
-    HjhSCNN(35, 0.5, 2, latency_replica),
-    HjhSNN(35, 0.5, 2, repeat_replica),
-    HjhSNN(35, 0.5, 2, rate_replica),
-    HjhSNN(35, 0.5, 2, latency_replica),
+    HjhSCNN(35, 2, repeat_replica),
+    HjhSCNN(35, 2, rate_replica),
+    HjhSCNN(35, 2, latency_replica),
+    HjhSNN(35, 2, repeat_replica),
+    HjhSNN(35, 2, rate_replica),
+    HjhSNN(35, 2, latency_replica),
     TcyNN(35),
-    TcySNN(35, 0.5, 2, repeat_replica),
-    TcySNN(35, 0.5, 2, rate_replica),
-    TcySNN(35, 0.5, 2, latency_replica),
+    TcySNN(35, 2, repeat_replica),
+    TcySNN(35, 2, rate_replica),
+    TcySNN(35, 2, latency_replica),
 ])
 def test_spec_models(net, dm_spec):
     run_experiment(net, dm_spec)
@@ -31,11 +31,23 @@ def test_spec_models(net, dm_spec):
 
 @pytest.mark.parametrize('net', [
     M5CNN(35),
-    M5SNN(35, 0.5, 2, repeat_replica),
-    M5SNN(35, 0.5, 2, rate_replica),
-    M5SNN(35, 0.5, 2, latency_replica),
+    M5SNN(35, 2, repeat_replica),
+    M5SNN(35, 2, rate_replica),
+    M5SNN(35, 2, latency_replica),
 ])
 def test_models(net, dm):
+    run_experiment(net, dm)
+
+
+@pytest.mark.parametrize('net, learn_beta, learn_thres', [
+    (M5SNN(35, 2, repeat_replica, learn_beta=True, learn_thres=True), True, True),
+    (M5SNN(35, 2, repeat_replica, learn_beta=False, learn_thres=True), False, True),
+    (M5SNN(35, 2, repeat_replica, learn_beta=True, learn_thres=False), True, False),
+    (M5SNN(35, 2, repeat_replica, learn_beta=False, learn_thres=False), False, False)
+])
+def test_learnable_args(net, dm, learn_beta, learn_thres):
+    assert net.snn[0].lif.beta.requires_grad == learn_beta
+    assert net.snn[0].lif.threshold.requires_grad == learn_thres
     run_experiment(net, dm)
 
 

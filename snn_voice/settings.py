@@ -18,6 +18,7 @@ DATA_DIR = ROOT_DIR / "data"
 DATA_SAMPLE_DIR = ROOT_DIR / "data_sample"
 
 EPSILON = np.finfo(np.float64).eps
+DEFAULT_BETA = 0.5
 
 LEARNING_RATE = 0.01
 TOPK = (1, 2, 5)
