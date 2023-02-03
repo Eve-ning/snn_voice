@@ -39,6 +39,18 @@ def test_models(net, dm):
     run_experiment(net, dm)
 
 
+@pytest.mark.parametrize('net, learn_beta, learn_thres', [
+    (M5SNN(35, 2, repeat_replica, learn_beta=True, learn_thres=True), True, True),
+    (M5SNN(35, 2, repeat_replica, learn_beta=False, learn_thres=True), False, True),
+    (M5SNN(35, 2, repeat_replica, learn_beta=True, learn_thres=False), True, False),
+    (M5SNN(35, 2, repeat_replica, learn_beta=False, learn_thres=False), False, False)
+])
+def test_learnable_args(net, dm, learn_beta, learn_thres):
+    assert net.snn[0].lif.beta.requires_grad == learn_beta
+    assert net.snn[0].lif.threshold.requires_grad == learn_thres
+    run_experiment(net, dm)
+
+
 def run_experiment(net, dm):
     """ Runs a singular experiment for each net and DataModule """
     net = net
