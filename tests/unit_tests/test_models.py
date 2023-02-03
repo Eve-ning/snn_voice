@@ -10,20 +10,20 @@ from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, late
 
 @pytest.mark.parametrize('net', [
     PiczakCNN(35),
-    PiczakSNN(35, 0.5, 2, repeat_replica),
-    PiczakSNN(35, 0.5, 2, rate_replica),
-    PiczakSNN(35, 0.5, 2, latency_replica),
+    PiczakSNN(35, 2, repeat_replica),
+    PiczakSNN(35, 2, rate_replica),
+    PiczakSNN(35, 2, latency_replica),
     HjhCNN(35),
-    HjhSCNN(35, 0.5, 2, repeat_replica),
-    HjhSCNN(35, 0.5, 2, rate_replica),
-    HjhSCNN(35, 0.5, 2, latency_replica),
-    HjhSNN(35, 0.5, 2, repeat_replica),
-    HjhSNN(35, 0.5, 2, rate_replica),
-    HjhSNN(35, 0.5, 2, latency_replica),
+    HjhSCNN(35, 2, repeat_replica),
+    HjhSCNN(35, 2, rate_replica),
+    HjhSCNN(35, 2, latency_replica),
+    HjhSNN(35, 2, repeat_replica),
+    HjhSNN(35, 2, rate_replica),
+    HjhSNN(35, 2, latency_replica),
     TcyNN(35),
-    TcySNN(35, 0.5, 2, repeat_replica),
-    TcySNN(35, 0.5, 2, rate_replica),
-    TcySNN(35, 0.5, 2, latency_replica),
+    TcySNN(35, 2, repeat_replica),
+    TcySNN(35, 2, rate_replica),
+    TcySNN(35, 2, latency_replica),
 ])
 def test_spec_models(net, dm_spec):
     run_experiment(net, dm_spec)
@@ -31,9 +31,9 @@ def test_spec_models(net, dm_spec):
 
 @pytest.mark.parametrize('net', [
     M5CNN(35),
-    M5SNN(35, 0.5, 2, repeat_replica),
-    M5SNN(35, 0.5, 2, rate_replica),
-    M5SNN(35, 0.5, 2, latency_replica),
+    M5SNN(35, 2, repeat_replica),
+    M5SNN(35, 2, rate_replica),
+    M5SNN(35, 2, latency_replica),
 ])
 def test_models(net, dm):
     run_experiment(net, dm)
