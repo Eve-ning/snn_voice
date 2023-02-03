@@ -13,7 +13,8 @@ class PiczakCNN(ModuleCNN, ABC):
 
         self.cnn = nn.Sequential(
             PiczakCNNBlock(1, 80, (57, 6), (1, 1), (4, 3), (1, 3), 0.5),
-            PiczakCNNBlock(80, 80, (1, 3), (1, 1), (1, 3), (1, 3), None))
+            PiczakCNNBlock(80, 80, (1, 3), (1, 1), (1, 3), (1, 3), None)
+        )
 
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
         self.flatten = nn.Flatten(start_dim=1)

@@ -5,6 +5,7 @@ import torch
 from torch import nn
 
 from snn_voice.model.module import ModuleSNN
+from snn_voice.settings import DEFAULT_BETA
 
 
 class TcySNN(ModuleSNN, nn.Module):
@@ -14,7 +15,7 @@ class TcySNN(ModuleSNN, nn.Module):
                  n_channels: int = 10,
                  learn_beta: bool = True,
                  learn_thres: bool = True,
-                 beta: float = 0.5,
+                 beta: float = DEFAULT_BETA,
                  *args, **kwargs):
         super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)
         self.snn = nn.ModuleList([
