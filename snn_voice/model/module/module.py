@@ -108,7 +108,8 @@ class Module(pl.LightningModule, ABC):
             max_lr=self.lr,
             steps_per_epoch=steps_per_epoch,
             epochs=self.trainer.max_epochs,
-            # verbose=True
+            pct_start=0.2,
+            three_phase=True,
         )
 
         return {
