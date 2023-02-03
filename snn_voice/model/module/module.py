@@ -30,6 +30,7 @@ class Module(pl.LightningModule, ABC):
         self.one_cycle_kwargs = one_cycle_kwargs
         self.topk = TOPK
         self.criterion = nn.CrossEntropyLoss()
+        self.save_hyperparameters()
         # We'll set a static example, exposing the correct sizes is too much of a workaround
         # self.example_input_array = torch.rand([32, 1, 4000])
 
