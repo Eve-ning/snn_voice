@@ -15,6 +15,7 @@ class Module(pl.LightningModule, ABC):
     def __init__(
             self,
             lr: float = LEARNING_RATE,
+            one_cycle_kwargs: dict = None
     ):
         """ Initializes an abstract datamodule for inheritance
 
@@ -23,7 +24,10 @@ class Module(pl.LightningModule, ABC):
         """
 
         super().__init__()
+        if one_cycle_kwargs is None:
+            one_cycle_kwargs = {}
         self.lr = lr
+        self.one_cycle_kwargs = one_cycle_kwargs
         self.topk = TOPK
         self.criterion = nn.CrossEntropyLoss()
         # We'll set a static example, exposing the correct sizes is too much of a workaround
@@ -103,13 +107,14 @@ class Module(pl.LightningModule, ABC):
             else len(self.trainer.datamodule.train_dataloader())
 
         # LR Scheduler through Cosine Annealing
+
         lr_scheduler = OneCycleLR(
             optimizer,
             max_lr=self.lr,
             steps_per_epoch=steps_per_epoch,
             epochs=self.trainer.max_epochs,
-            pct_start=0.2,
             three_phase=True,
+            **self.one_cycle_kwargs
         )
 
         return {
