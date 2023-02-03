@@ -9,12 +9,15 @@ from snn_voice.model.module import ModuleSNN
 
 
 class HjhSCNN(ModuleSNN, nn.Module):
-    def __init__(self, n_classes: int, lif_beta: float, n_steps: int,
+    def __init__(self, n_classes: int, n_steps: int,
                  time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
+                 learn_beta: bool = True,
+                 learn_thres: bool = True,
+                 beta: float = 0.5,
                  *args, **kwargs):
         super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)
         self.snn = nn.ModuleList([
-            snn.Leaky(beta=lif_beta)
+            snn.Leaky(beta=beta, learn_beta=learn_beta, learn_threshold=learn_thres)
         ])
         self.cnn = nn.Sequential(
             HjhCNNBlock(1, 8, 5, 2),

@@ -8,13 +8,18 @@ from snn_voice.model.piczak.blocks import PiczakSNNBlock
 
 
 class PiczakSNN(ModuleSNN, nn.Module):
-    def __init__(self, n_classes: int, lif_beta: float, n_steps: int,
+    def __init__(self, n_classes: int, n_steps: int,
                  time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
+                 learn_beta: bool = True,
+                 learn_thres: bool = True,
+                 beta: float = 0.5,
                  *args, **kwargs):
         super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)
         self.snn = nn.ModuleList([
-            PiczakSNNBlock(1, 80, (57, 6), (1, 1), (4, 3), (1, 3), lif_beta, 0.5),
-            PiczakSNNBlock(80, 80, (1, 3), (1, 1), (1, 3), (1, 3), lif_beta, 0)
+            PiczakSNNBlock(1, 80, (57, 6), (1, 1), (4, 3), (1, 3), beta, 0.5,
+                           learn_beta=learn_beta, learn_thres=learn_thres),
+            PiczakSNNBlock(80, 80, (1, 3), (1, 1), (1, 3), (1, 3), beta, 0,
+                           learn_beta=learn_beta, learn_thres=learn_thres)
         ])
 
         self.avg_pool = nn.AdaptiveAvgPool2d(1)
