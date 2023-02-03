@@ -16,7 +16,7 @@ class PiczakSNNBlock(nn.Module):
             beta: float,
             dropout: float = 0.5,
             learn_beta: bool = True,
-            learn_thres: bool = True,
+            learn_thres: bool = False,
     ):
         """ A single SNN Block to be used in Piczak Models
 

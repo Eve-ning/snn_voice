@@ -10,7 +10,7 @@ class HjhSNNBlock(nn.Module):
                  beta: float,
                  max_pool_ksize: int = None,
                  learn_beta: bool = True,
-                 learn_thres: bool = True,
+                 learn_thres: bool = False,
                  ):
         """ A single SNN Block to be used in Hjh Models
 

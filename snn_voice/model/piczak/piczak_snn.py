@@ -12,7 +12,7 @@ class PiczakSNN(ModuleSNN, nn.Module):
     def __init__(self, n_classes: int, n_steps: int,
                  time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
                  learn_beta: bool = True,
-                 learn_thres: bool = True,
+                 learn_thres: bool = False,
                  beta: float = DEFAULT_BETA,
                  *args, **kwargs):
         super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)

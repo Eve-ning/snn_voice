@@ -11,7 +11,7 @@ class MxSNNBlock(nn.Module):
                  beta: float,
                  step: int = 1,
                  learn_beta: bool = True,
-                 learn_thres: bool = True,
+                 learn_thres: bool = False,
                  ):
         """ A single SNN Block to be used in M-Models
 

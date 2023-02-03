@@ -14,7 +14,7 @@ class TcySNN(ModuleSNN, nn.Module):
                  time_step_replica: Callable[[torch.Tensor, int], torch.Tensor],
                  n_channels: int = 10,
                  learn_beta: bool = True,
-                 learn_thres: bool = True,
+                 learn_thres: bool = False,
                  beta: float = DEFAULT_BETA,
                  *args, **kwargs):
         super().__init__(n_steps=n_steps, time_step_replica=time_step_replica, *args, **kwargs)
