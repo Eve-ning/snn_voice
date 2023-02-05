@@ -1,0 +1,4 @@
+defaults:
+  - /data: speech_commands
+
+name: ???

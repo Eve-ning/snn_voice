@@ -1,0 +1,9 @@
+defaults:
+  - model
+
+snn:
+  n_steps: 5
+  time_step_replica: repeat
+  learn_beta: False
+  learn_thres: False
+  beta: 0.5

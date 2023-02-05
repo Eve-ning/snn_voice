@@ -1,0 +1,7 @@
+defaults:
+  - model_snn
+
+
+name: M5SNN
+data:
+  n_mels: null

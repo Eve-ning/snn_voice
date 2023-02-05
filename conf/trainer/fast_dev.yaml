@@ -1,0 +1,5 @@
+defaults:
+  - dev
+  - _self_
+
+fast_dev_run: True
