@@ -129,7 +129,7 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
     def val_dataloader(self):
         return DataLoader(self.val, batch_size=self.batch_size,
-                          collate_fn=self.collate_fn_factory(), shuffle=True)
+                          collate_fn=self.collate_fn_factory())
 
     def test_dataloader(self):
         return DataLoader(self.test, batch_size=self.batch_size,
