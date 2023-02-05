@@ -17,8 +17,7 @@ def sanitize(x: str):
 
 
 @hydra.main(version_base=None, config_path="../../conf", config_name="config")
-def my_app(cfg: ConfigSchema) -> None:
-    print(OmegaConf.to_yaml(cfg))
+def experiment(cfg: ConfigSchema) -> None:
     Model = eval(sanitize((cfg_m := cfg.model).name))
     model = Model(
         n_classes=cfg_m.data.n_classes,
@@ -52,4 +51,4 @@ def my_app(cfg: ConfigSchema) -> None:
 
 
 if __name__ == "__main__":
-    my_app()
+    experiment()
