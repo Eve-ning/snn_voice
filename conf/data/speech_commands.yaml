@@ -1,0 +1,3 @@
+name: SpeechCommandsDataModule
+n_mels: 60
+n_classes: 35

@@ -1,0 +1,6 @@
+max_epochs: 5
+limit_train_batches: 128
+limit_val_batches: 16
+callbacks:
+  lr_monitor: true
+  early_stopping: true

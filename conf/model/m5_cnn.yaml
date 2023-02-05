@@ -1,0 +1,7 @@
+defaults:
+  - model
+
+
+name: M5CNN
+data:
+  n_mels: null
