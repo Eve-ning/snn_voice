@@ -9,7 +9,8 @@ test_config=False
 
 # Runs for one experiment
 run-one:
-	python -m\
+	#!/bin/bash
+	python3 -m\
 	snn_voice.scripts.experiment\
 	 model=m5_snn\
 	 trainer.accelerator=${device}\
@@ -17,9 +18,9 @@ run-one:
 	 trainer=${trainer}
 
 run-all:
-	python -m\
+	python3 -m\
 	snn_voice.scripts.experiment\
-	 -m model=glob(*,exclude=[model,model_snn,hjh_scnn])\
+	 -m "model=glob(*,exclude=[model,model_snn,hjh_scnn])"\
 	 trainer=${trainer}\
 	 trainer.accelerator=${device}\
 	 ++model.snn.n_steps=1,2,5,15,40\
