@@ -50,3 +50,7 @@ class Model:
 class ConfigSchema:
     trainer: Trainer
     model: Model
+    # Whether to use the uploaded SampleDataModule or not
+    # We can trigger this by doing +sample=True
+    # This is vaguely documented as it's not really recommended.
+    sample: bool

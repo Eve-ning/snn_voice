@@ -31,7 +31,8 @@ def experiment(cfg: ConfigSchema) -> None:
         )
     else:
         model = Model(n_classes=cfg_m.data.n_classes)
-    DataModule = eval(sanitize((cfg_d := cfg_m.data).name))
+    cfg_d = cfg_m.data
+    DataModule = SampleDataModule if cfg.sample else eval(sanitize(cfg_d.name))
     dm = DataModule(
         n_mels=cfg_d.n_mels,
         batch_size=cfg_d.batch_size
