@@ -2,4 +2,4 @@ defaults:
   - model_snn
 
 
-name: TcyNN
+name: TcySNN
