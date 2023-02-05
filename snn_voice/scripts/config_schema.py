@@ -31,15 +31,19 @@ class Data:
     batch_size: int
 
 
-@dataclass
-class Model:
-    name: str
-    data: Data
+class SNN:
     n_steps: int
     time_step_replica: str
     learn_beta: bool
     learn_thres: bool
     beta: float
+
+
+@dataclass
+class Model:
+    name: str
+    data: Data
+    snn: SNN
 
 
 @dataclass
