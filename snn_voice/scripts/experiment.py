@@ -20,6 +20,8 @@ def sanitize(x: str):
 @hydra.main(version_base=None, config_path="../../conf", config_name="config")
 def experiment(cfg: ConfigSchema) -> None:
     print(OmegaConf.to_yaml(cfg))
+    if cfg.test_config:
+        return
     Model = eval(sanitize((cfg_m := cfg.model).name))
 
     if issubclass(Model, ModuleSNN):
@@ -33,8 +35,7 @@ def experiment(cfg: ConfigSchema) -> None:
         )
     else:
         model = Model(n_classes=cfg_m.data.n_classes)
-    cfg_d = cfg_m.data
-    DataModule = SampleDataModule if cfg.sample else eval(sanitize(cfg_d.name))
+    DataModule = eval(sanitize((cfg_d := cfg_m.data).name))
     dm = DataModule(
         n_mels=cfg_d.n_mels,
         batch_size=cfg_d.batch_size
