@@ -1,5 +1,6 @@
 import hydra
 import pytorch_lightning as pl
+from omegaconf import OmegaConf
 from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
 
 from snn_voice.datamodule import SpeechCommandsDataModule, SampleDataModule  # noqa
@@ -18,6 +19,7 @@ def sanitize(x: str):
 
 @hydra.main(version_base=None, config_path="../../conf", config_name="config")
 def experiment(cfg: ConfigSchema) -> None:
+    print(OmegaConf.to_yaml(cfg))
     Model = eval(sanitize((cfg_m := cfg.model).name))
 
     if issubclass(Model, ModuleSNN):
