@@ -1,10 +1,9 @@
 max_epochs: 5
 limit_train_batches: 128
 limit_val_batches: 16
+accelerator: gpu
 callbacks:
   early_stopping:
     patience: 3
     mode: min
     monitor: val_loss
-accelerator: gpu
-
