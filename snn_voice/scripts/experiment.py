@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import hydra
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
@@ -57,7 +59,8 @@ def experiment(cfg: ConfigSchema) -> None:
                 patience=cfg_tce.patience,
                 mode=cfg_tce.mode,
             )
-        ]
+        ],
+        default_root_dir=output_dir.as_posix()
     )
     trainer.fit(model, datamodule=dm)
 
