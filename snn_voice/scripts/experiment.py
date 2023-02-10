@@ -51,7 +51,7 @@ def experiment(cfg: ConfigSchema) -> None:
         limit_train_batches=(cfg_t := cfg.trainer).limit_train_batches,
         limit_val_batches=cfg_t.limit_val_batches,
         max_epochs=cfg_t.max_epochs,
-        fast_dev_run=cfg_t.fast_dev_run,
+        fast_dev_run=cfg_t.get('fast_dev_run', False),
         callbacks=[
             LearningRateMonitor(),
             EarlyStopping(
