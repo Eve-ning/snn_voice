@@ -10,7 +10,6 @@ test_config=False
 
 # Runs for one experiment
 run-one:
-	#!/bin/bash
 	python3 -m\
 	snn_voice.scripts.experiment\
 	 model=m5_snn\
@@ -21,6 +20,7 @@ run-one:
 
 # Runs for two experiments
 run-two:
+	#!/bin/bash
 	python3 -m\
 	snn_voice.scripts.experiment\
      -m\
@@ -30,6 +30,7 @@ run-two:
 	 +test_config=${test_config}
 
 run-all:
+	#!/bin/bash
 	python3 -m\
 	snn_voice.scripts.experiment\
 	 -m "model=glob(*,exclude=[model,model_snn,hjh_scnn])"\
