@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import hydra
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
@@ -12,6 +14,8 @@ from snn_voice.model.tcy import TcyNN, TcySNN  # noqa
 from snn_voice.scripts.config_schema import ConfigSchema
 from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, latency_replica  # noqa
 
+from hydra.core.hydra_config import HydraConfig
+
 
 def sanitize(x: str):
     return "".join(c for c in x if c.isalnum())
@@ -19,7 +23,9 @@ def sanitize(x: str):
 
 @hydra.main(version_base=None, config_path="../../conf", config_name="config")
 def experiment(cfg: ConfigSchema) -> None:
+    output_dir = Path(HydraConfig.get().runtime.output_dir)
     print(OmegaConf.to_yaml(cfg))
+    print(f"Working Directory: {output_dir}")
     if cfg.test_config:
         return
     Model = eval(sanitize((cfg_m := cfg.model).name))
@@ -45,7 +51,7 @@ def experiment(cfg: ConfigSchema) -> None:
         limit_train_batches=(cfg_t := cfg.trainer).limit_train_batches,
         limit_val_batches=cfg_t.limit_val_batches,
         max_epochs=cfg_t.max_epochs,
-        fast_dev_run=cfg_t.fast_dev_run,
+        fast_dev_run=cfg_t.get('fast_dev_run', False),
         callbacks=[
             LearningRateMonitor(),
             EarlyStopping(
@@ -53,7 +59,8 @@ def experiment(cfg: ConfigSchema) -> None:
                 patience=cfg_tce.patience,
                 mode=cfg_tce.mode,
             )
-        ]
+        ],
+        default_root_dir=output_dir.as_posix()
     )
     trainer.fit(model, datamodule=dm)
 

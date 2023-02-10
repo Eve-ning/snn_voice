@@ -1,3 +1,27 @@
 defaults:
+  - _self_
   - trainer: fast_dev
   - model: model
+
+hydra:
+  run:
+    dir: >-
+      experiments/singlerun/
+      ${now:%Y-%m-%d.%H-%M-%S}/
+      ${hydra.runtime.choices.model}/
+  sweep:
+    dir: >-
+      experiments/multirun/
+      ${now:%Y-%m-%d.%H-%M-%S}/
+      ${hydra.runtime.choices.model}/
+    subdir: >-
+      ${hydra.job.override_dirname}
+  job:
+    config:
+      override_dirname:
+        exclude_keys:
+          - +test_config
+          - model
+          - trainer.accelerator
+          - trainer
+          - test_config

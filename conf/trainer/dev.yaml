@@ -1,6 +1,6 @@
-max_epochs: 5
-limit_train_batches: 128
-limit_val_batches: 16
+max_epochs: 2
+limit_train_batches: 3
+limit_val_batches: 2
 accelerator: gpu
 callbacks:
   early_stopping:
