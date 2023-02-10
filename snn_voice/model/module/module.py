@@ -91,9 +91,9 @@ class Module(pl.LightningModule, ABC):
             y_matches = (y_pred_topk == y_true).sum(dim=0).to(float)
             acc_topk = y_matches.mean()
             if validation:
-                self.log(f'Val_Top{k}_Acc', acc_topk)
+                self.log(f'val_top{k}_acc', acc_topk)
             else:
-                self.log(f'Top{k}_Acc', acc_topk, prog_bar=True)
+                self.log(f'top{k}_Acc', acc_topk, prog_bar=True)
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(
