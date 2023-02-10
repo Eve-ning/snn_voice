@@ -12,6 +12,8 @@ from snn_voice.model.tcy import TcyNN, TcySNN  # noqa
 from snn_voice.scripts.config_schema import ConfigSchema
 from snn_voice.utils.time_step_replica import repeat_replica, rate_replica, latency_replica  # noqa
 
+from hydra.core.hydra_config import HydraConfig
+
 
 def sanitize(x: str):
     return "".join(c for c in x if c.isalnum())
@@ -19,7 +21,9 @@ def sanitize(x: str):
 
 @hydra.main(version_base=None, config_path="../../conf", config_name="config")
 def experiment(cfg: ConfigSchema) -> None:
+    output_dir = Path(HydraConfig.get().runtime.output_dir)
     print(OmegaConf.to_yaml(cfg))
+    print(f"Working Directory: {output_dir}")
     if cfg.test_config:
         return
     Model = eval(sanitize((cfg_m := cfg.model).name))
