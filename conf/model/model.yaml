@@ -2,3 +2,5 @@ defaults:
   - /data: speech_commands
 
 name: ???
+lr: 0.01
+pct_start: 0.2

@@ -3,3 +3,5 @@ defaults:
 
 
 name: PiczakCNN
+lr: 0.001
+pct_start: 0.4
