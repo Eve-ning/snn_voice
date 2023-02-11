@@ -44,6 +44,8 @@ class Model:
     name: str
     data: Data
     snn: SNN
+    lr: float
+    pct_start: float
 
 
 @dataclass
