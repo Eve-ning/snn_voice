@@ -38,6 +38,10 @@ def experiment(cfg: ConfigSchema) -> None:
             learn_beta=cfg_m.snn.learn_beta,
             learn_thres=cfg_m.snn.learn_thres,
             beta=cfg_m.snn.beta,
+            one_cycle_kwargs={
+                'pct_start': 0.2,
+                'final_div_factor': 1e5
+            }
         )
     else:
         model = Model(n_classes=cfg_m.data.n_classes)
