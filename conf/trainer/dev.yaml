@@ -4,6 +4,6 @@ limit_val_batches: 2
 accelerator: gpu
 callbacks:
   early_stopping:
-    patience: 3
+    patience: 5
     mode: min
     monitor: val_loss
