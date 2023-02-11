@@ -131,6 +131,8 @@ class PlotHist:
         def hook(model, input, output):
             if self.hist.get(key, None) is None:
                 self.hist[key] = []
+            if isinstance(output, tuple):
+                output = output[0]  # Get spike layer
             self.hist[key].append(output.detach())
 
         return self.net.get_submodule(key).register_forward_hook(hook)
