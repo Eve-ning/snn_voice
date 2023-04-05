@@ -6,14 +6,10 @@ defaults:
 hydra:
   run:
     dir: >-
-      experiments/singlerun/
-      ${now:%Y-%m-%d.%H-%M-%S}/
-      ${hydra.runtime.choices.model}/
+      experiments/singlerun/${now:%Y-%m-%d.%H-%M-%S}/${hydra.runtime.choices.model}/
   sweep:
     dir: >-
-      experiments/multirun/
-      ${now:%Y-%m-%d.%H-%M-%S}/
-      ${hydra.runtime.choices.model}/
+      experiments/multirun/${now:%Y-%m-%d.%H-%M-%S}/${hydra.runtime.choices.model}/
     subdir: >-
       ${hydra.job.override_dirname}
   job:

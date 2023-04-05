@@ -50,10 +50,9 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
         self.le = LabelEncoder()
         self.downsample = Resample(*downsample)
 
-        n_fft = int(MIN_WINDOW_MS / (1 / downsample[1] * 1000))
-
         # We'll figure out the FFT window needed to satisfy the minimum window ms
-        self.mel_spec = MelSpectrogram(n_mels=n_mels, n_fft=n_fft) if n_mels else n_mels
+
+        self.mel_spec = MelSpectrogram(n_mels=n_mels, win_length=MIN_WINDOW_MS) if n_mels else n_mels
 
     def prepare_data(self):
         """ Ran once to download all data necessary before data setup """
@@ -125,11 +124,11 @@ class SpeechCommandsDataModule(pl.LightningDataModule):
 
     def train_dataloader(self):
         return DataLoader(self.train, batch_size=self.batch_size, shuffle=True,
-                          collate_fn=self.collate_fn_factory())
+                          collate_fn=self.collate_fn_factory(), pin_memory=True)
 
     def val_dataloader(self):
         return DataLoader(self.val, batch_size=self.batch_size,
-                          collate_fn=self.collate_fn_factory())
+                          collate_fn=self.collate_fn_factory(), pin_memory=True)
 
     def test_dataloader(self):
         return DataLoader(self.test, batch_size=self.batch_size,

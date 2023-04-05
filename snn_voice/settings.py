@@ -10,7 +10,7 @@ SPEECHCOMMAND_CLASSES = (
     'sheila', 'six', 'stop', 'three', 'tree', 'two', 'up', 'visual', 'wow', 'yes', 'zero'
 )
 
-MIN_WINDOW_MS = 20
+MIN_WINDOW_MS = 60
 
 SRC_DIR = Path(__file__).parent
 ROOT_DIR = SRC_DIR.parent

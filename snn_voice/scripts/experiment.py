@@ -3,8 +3,8 @@ from pathlib import Path
 import hydra
 import pytorch_lightning as pl
 from omegaconf import OmegaConf
-from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor
-
+from pytorch_lightning.callbacks import EarlyStopping, LearningRateMonitor, BatchSizeFinder
+import torch
 from snn_voice.datamodule import SpeechCommandsDataModule, SampleDataModule  # noqa
 from snn_voice.model.hjh import HjhCNN, HjhSCNN, HjhSNN  # noqa
 from snn_voice.model.module import ModuleSNN
@@ -29,18 +29,24 @@ def experiment(cfg: ConfigSchema) -> None:
     if cfg.test_config:
         return
     Model = eval(sanitize((cfg_m := cfg.model).name))
-
+    snn_args = {}
     if issubclass(Model, ModuleSNN):
-        model = Model(
-            n_classes=cfg_m.data.n_classes,
+        snn_args = dict(
             n_steps=cfg_m.snn.n_steps,
             time_step_replica=eval(sanitize(cfg_m.snn.time_step_replica) + "_replica"),
+            beta=cfg_m.snn.beta,
             learn_beta=cfg_m.snn.learn_beta,
             learn_thres=cfg_m.snn.learn_thres,
-            beta=cfg_m.snn.beta,
         )
-    else:
-        model = Model(n_classes=cfg_m.data.n_classes)
+    model = Model(
+        **snn_args,
+        n_classes=cfg_m.data.n_classes,
+        one_cycle_kwargs={
+            'pct_start': cfg_m.pct_start,
+            'final_div_factor': 1e5
+        },
+        lr=cfg_m.lr,
+    )
     DataModule = eval(sanitize((cfg_d := cfg_m.data).name))
     dm = DataModule(
         n_mels=cfg_d.n_mels,
@@ -60,10 +66,12 @@ def experiment(cfg: ConfigSchema) -> None:
                 mode=cfg_tce.mode,
             )
         ],
-        default_root_dir=output_dir.as_posix()
+        default_root_dir=output_dir.as_posix(),
+        devices=[2, ]
     )
     trainer.fit(model, datamodule=dm)
 
 
 if __name__ == "__main__":
+    torch.set_float32_matmul_precision('high')
     experiment()
