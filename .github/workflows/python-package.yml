@@ -40,4 +40,4 @@ jobs:
           python -m pytest tests/unit_tests
       - name: Test make run
         run: |
-          make run-all test_config=True HYDRA_FULL_ERROR=1
+          make run-all-cnn test_config=True HYDRA_FULL_ERROR=1
