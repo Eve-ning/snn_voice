@@ -1,38 +1,31 @@
 [![Python package](https://github.com/Eve-ning/snn_voice/actions/workflows/python-package.yml/badge.svg)](https://github.com/Eve-ning/snn_voice/actions/workflows/python-package.yml)
 
-# Speech Command predictions through SNN
+# Retraining SNN Conversions: CNN to SNN for Audio Classification Tasks
 
-SNN-CNN Hybrid Model for Voice Recognition
+This is the repository for the paper titled in the heading, submitted for my NTU FYP
 
-For our NTU FYP, we explore the efficacy of using SNN for dimensionality reduction (thus parameter reduction) as a preprocessing step.
-This heavily reduces required hardware to realise the system, however, what are the tradeoffs to be made?
+## Abstract
+Efficient yet powerful models are in high demand for its portability and affordability.
+Amongst other methods such as model-pruning, is limiting neural network operations to
+sparse event-driven spikes: Spiking Neural Networks (SNNs) aims to unravel a new di-
+rection in machine learning research. A significant amount of SNN literature straddles
+upon mature works of artificial neural networks (ANNs) by migrating its architecture
+and parameters into SNNs, optimizing the migration to retain as much performance as
+possible. We spearhead a novel approach: the architecture is migrated and retrained
+from scratch. We hypothesize that this new direction will unravel concepts that cur-
+rently bottlenecks improvements in the field of SNN conversions. Furthermore, alike
+Transfer Learning, inspire future efforts of fine-tuning a well converted model through
+training.
 
-## Modular Experiment Structure
+This paper presents our analysis of training converted Convolutional Neural Networks
+(CNNs) to SNNs on audio classification models. Results show that (1) SNN conver-
+sions consistently underperforms CNNs marginally during training, however we also
+show that model complexity has a possible association with this margin. (2) SNN con-
+verts doesn’t necessarily approach the performance of its CNN counterparts asymptot-
+ically by increasing the number of time-steps. (3) SNN training from scratch is costly
+and impractical with current hardware and dedicated SNN optimization techniques are
+necessary. (4) Enabling the SNN membrane decay rate to be learned doesn’t signifi-
+cantly affect performance. This paper provides valuable insights into the perspective of
+retraining converted SNNs for audio classification, and serves as a reference for future
+studies and hardware implementation benchmarks.
 
-We segment our experiments modularly: That means, for each purpose, 
-we can substitute parts that fulfil that purpose.
-
-| Section    | Purpose           | Part A           | Part B      |
-|------------|-------------------|------------------|-------------|
-| Input      | Ingestion         | Speech Commands  | TIDIGTS     |
-|            | Preprocessing     | Resampling       | Spectrogram |
-| Model      | Structure         | M5               | Piczak      |
-|            | Optimization      | Adam             | SGD         |
-|            | Scheduling        | Cosine Annealing | Step LR     |
-| Evaluation | Metric Monitoring | Top-K (Accuracy) |             |
-
-Take for example, we can run a Piczak Experiment through
-- Speech Commands Dataset
-- Resampling to 4000Hz & transforming with Mel Spectrogram
-- Using the Piczak Model structure
-- Using Adam to optimize
-- With a Cosine Annealing Learning Rate Scheduler
-- Finally, evaluating with Top-K Accuracy
-
-> You can see how it works in our unit tests!
-
-## Tying back to SNNs
-
-Here, we're interested in substituting some CNN layers with SNNs. 
-We can simply change **Model Structure** and retain the rest, 
-this heavily reduces redundancy.
