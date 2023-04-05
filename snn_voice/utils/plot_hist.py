@@ -38,7 +38,7 @@ class PlotHist:
         self.net(input_ar)
         self._remove_hooks(hooks)
 
-    def plot(self, input_ar: torch.Tensor, subplots_kwargs: dict = {}):
+    def plot(self, input_ar: torch.Tensor, subplots_kwargs: dict = {}, contrast_power = 1):
         """ Plots the network history given the input array
 
         Args:
@@ -103,7 +103,7 @@ class PlotHist:
             fig, axs = plt.subplots(2, 2, **subplots_kwargs)
 
         for (k, im), ax in zip(ims.items(), [axs] if n_ims == 1 else axs.flatten()):
-            ax.imshow(im)
+            ax.imshow(im ** contrast_power)
             ax.set_title(k)
             ax.axis('off')
         fig.suptitle(
