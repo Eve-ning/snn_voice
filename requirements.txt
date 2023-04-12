@@ -7,5 +7,5 @@ torchvision
 torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
 librosa
 pytorch-lightning[extra]
-snntorch
+snntorch==0.5.3
 hydra-core
